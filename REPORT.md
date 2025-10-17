@@ -150,6 +150,37 @@
 - Current state: Ready for pilot ECS Scheduled Task; logs as JSON counters to CloudWatch.
 - Next: optional RDS Postgres; minimal CloudWatch alarms; per-domain throttling tune.
 
+## Cloud concepts (simple)
+- S3 (Simple Storage Service): cloud folder for files. We upload PDFs/HTML here. It is durable (safe), cheap, and easy to access from other jobs.
+- ECS (Elastic Container Service): runs our Docker container on a schedule. Think of it like a timer that runs our CLI commands daily.
+- ECR (Elastic Container Registry): a private place to store the Docker image.
+- RDS (Relational Database Service): managed databases. We can use Postgres here instead of local SQLite if needed.
+- CloudWatch: logs and simple metrics/alarms. Our program prints JSON counters; CloudWatch collects them.
+- IAM (Identity and Access Management): permissions. It decides which service can read/write S3, logs, etc.
+- Secrets Manager / Systems Manager Parameter Store (SSM): safe place for passwords or API keys.
+- Task Definition: a template that says which Docker image to run, with which environment variables and how much CPU/RAM.
+- Scheduled Task: a rule that runs the Task Definition on a schedule (e.g., every 6 hours).
+
+### Deployment flow (checklist)
+1) Build Docker image locally; push to ECR.
+2) Create S3 bucket and prefix (folder) for files/exports.
+3) Create IAM role for the ECS task with permissions: write to S3, write logs to CloudWatch, read parameters/secrets if used.
+4) Create ECS Task Definition using the ECR image; set env vars: `UWSS_CONTACT_EMAIL`, `USER_AGENT`, `UWSS_S3_BUCKET`, optional DB URL.
+5) Create ECS Scheduled Task (EventBridge rule) to run the Task Definition on a time schedule.
+6) Watch logs in CloudWatch; check JSON counters and outputs in S3.
+
+### FAQ (cloud)
+- Why S3 and not local disk?
+  - S3 is durable, scalable, and easy to share across machines. Local disk can be lost when the job ends.
+- Why ECS instead of a cron job on a server?
+  - ECS does not need a full-time server we maintain. It runs only when needed, is easier to scale, and integrates with logs and IAM.
+- Do we need RDS now?
+  - Not required for the pilot. SQLite works for single-writer batch jobs. RDS is useful later for multi-user access and larger scale.
+- How do we secure secrets?
+  - Use Secrets Manager/SSM and IAM roles. Never hardcode in code.
+- How do we know the system is healthy?
+  - Check CloudWatch logs for JSON counters: `downloads_ok`, `downloads_fail`, `429_5xx_count`, and consider a simple alarm if failures spike.
+
 ## What was added in this iteration
 - Project skeleton with Git, venv, src layout (`src/uwss/`).
 - Config validator CLI: `uwss config-validate --config config/config.yaml`.
