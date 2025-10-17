@@ -29,6 +29,7 @@ class Document(Base):
 	relevance_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 	status: Mapped[str] = mapped_column(String(40), default="not_fetched")
 	source: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # crossref|arxiv|openalex|...
+	topic: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
 	# provenance
 	fetched_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)

@@ -18,6 +18,7 @@
   - `uwss download-open --db data/uwss.sqlite --outdir data/files --limit 3 --config config/config.yaml`
   - `uwss fetch --db data/uwss.sqlite --outdir data/files --limit 10 --config config/config.yaml`
   - `uwss crawl-seeds --seeds https://example.com --db data/uwss.sqlite --max-pages 10`
+  - With keyword filter: `uwss crawl-seeds --seeds https://example.com --db data/uwss.sqlite --max-pages 10 --keywords-file config/keywords_scrapy.txt`
   - `uwss stats --db data/uwss.sqlite --json-out data/export/stats.json`
   - `uwss validate --db data/uwss.sqlite --json-out data/export/validation.json`
 
@@ -73,6 +74,7 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
  - Export produced `data/export/candidates.jsonl` (90 items at threshold 0.0).
  - OA-only export produced `data/export/candidates_oa.jsonl` (20 items).
  - After normalization + dedupe: total 68 docs; OA 19; no duplicate DOIs; titles dup reduced (2 groups remaining pending manual review).
+ - Scrapy refined to save only keyword-relevant pages (title/body match) to reduce noise.
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
   - Provenance: http_status + file_size được lưu khi tải.
 

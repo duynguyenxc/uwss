@@ -32,7 +32,7 @@ class SeedSpider(scrapy.Spider):
 			return
 		self.pages_crawled += 1
 
-		# Save the landing page as a candidate if not exists; extract basic HTML metadata
+		# Save the landing page as a candidate if keyword-relevant; extract basic HTML metadata
 		session = self.SessionLocal()
 		try:
 			url = response.url
@@ -41,6 +41,13 @@ class SeedSpider(scrapy.Spider):
 			abstract = None
 			# heuristic: first <p> under main content
 			abstract = response.css("main p::text").get() or response.css("p::text").get()
+			# keyword filter: require at least one keyword match in title/body if patterns provided
+			is_relevant = True
+			if self.keyword_patterns:
+				full_text = (title or "") + "\n" + (" ".join(response.css("p::text").getall()) or "")
+				is_relevant = any(p.search(full_text) for p in self.keyword_patterns)
+			if not is_relevant:
+				return
 			if not exists:
 				doc = Document(source_url=url, status="metadata_only", source="scrapy", title=title, abstract=abstract)
 				session.add(doc)

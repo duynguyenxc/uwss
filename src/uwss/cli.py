@@ -142,6 +142,8 @@ def build_parser() -> argparse.ArgumentParser:
 					open_access=open_access,
 					abstract=abstract,
 					status="metadata_only",
+						source="openalex",
+						topic=", ".join(keywords[:3]) if keywords else None,
 				)
 				session.add(doc)
 				inserted += 1
@@ -220,6 +222,7 @@ def build_parser() -> argparse.ArgumentParser:
 						abstract=abstract,
 						status="metadata_only",
 						source="crossref",
+						topic=", ".join(keywords[:3]) if keywords else None,
 					)
 					session.add(doc)
 					inserted += 1
@@ -281,6 +284,7 @@ def build_parser() -> argparse.ArgumentParser:
 					abstract=item.get("summary") or "",
 					status="metadata_only",
 					source="arxiv",
+					topic=", ".join(keywords[:3]) if keywords else None,
 				)
 				session.add(doc)
 				inserted += 1
@@ -352,6 +356,7 @@ def build_parser() -> argparse.ArgumentParser:
 					"file_size": d.file_size,
 					"source": d.source,
 					"oa_status": d.oa_status,
+					"topic": d.topic,
 				})
 			# OA filter
 			if args.oa_only:

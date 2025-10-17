@@ -33,5 +33,8 @@ def migrate_db(db_path: Path) -> None:
 		if "oa_status" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN oa_status VARCHAR(50)"))
 			conn.commit()
+		if "topic" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN topic VARCHAR(100)"))
+			conn.commit()
 
 
