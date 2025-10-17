@@ -6,6 +6,8 @@ import hashlib
 from typing import Optional
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from sqlalchemy import select
 from datetime import datetime
 import mimetypes
@@ -59,6 +61,12 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 	out_dir.mkdir(parents=True, exist_ok=True)
 	engine, SessionLocal = create_sqlite_engine(db_path)
 	session = SessionLocal()
+	# Build a requests session with retries/backoff for robustness
+	s = requests.Session()
+	retry = Retry(total=3, backoff_factor=0.5, status_forcelist=(429, 500, 502, 503, 504))
+	adapter = HTTPAdapter(max_retries=retry)
+	s.mount("http://", adapter)
+	s.mount("https://", adapter)
 	count = 0
 	try:
 		# Only download documents that are open_access and missing local_path
@@ -70,7 +78,7 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			if not url:
 				continue
 			headers = {"User-Agent": f"uwss/0.1 ({contact_email})" if contact_email else "uwss/0.1"}
-			r = requests.get(url, headers=headers, timeout=30, allow_redirects=True)
+			r = s.get(url, headers=headers, timeout=30, allow_redirects=True)
 			if r.status_code != 200 or not r.content:
 				continue
 			content_type = r.headers.get("Content-Type", "")

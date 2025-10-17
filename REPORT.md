@@ -121,6 +121,40 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
 - Domain keywords file:
   - Added `config/keywords_concrete.txt` from provided list for discovery.
 
+---
+
+## New improvements (feature branch: `feat/cloud-ci-s3`)
+
+### Summary
+This iteration focuses on robustness, cloud integration, and developer workflow: retries during downloads, optional S3 uploads, a Postgres-ready DB URL helper, and a CI smoke workflow.
+
+### What changed
+- Download robustness: added retries/backoff (3 attempts, 0.5s backoff) for `fetch` HTTP requests. This reduces flakiness for transient 429/5xx/network issues.
+- S3 upload command: new CLI `s3-upload` to push files from `data/files/` to `s3://<bucket>/<prefix>`, using `boto3` with standard retry settings.
+- DB portability: new helper `create_engine_from_url(db_url)` to support Postgres (e.g., RDS) alongside local SQLite.
+- CI workflow: added GitHub Actions smoke checks (install deps, import libs, parse CLI, help output) on PRs and feature pushes.
+
+### How to run (Windows PowerShell)
+```bash
+# Install new dependency
+pip install -r requirements.txt
+
+# Optional: Upload downloaded files to S3
+python -m src.uwss.cli s3-upload --db data\uwss.sqlite --files-dir data\files --bucket YOUR_BUCKET --prefix uwss/ --region ap-southeast-1
+
+# Example: retries are automatic when fetching
+python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
+```
+
+### Verification
+- Fewer transient failures during `fetch` when network is unstable (observe logs/counts).
+- Files appear in `s3://<bucket>/<prefix>` with the same filenames as in `data/files/`.
+- CI runs on PRs to `main-next` and on `feat/**` pushes, ensuring environment and CLI parser remain healthy.
+
+### Notes
+- S3 credentials use standard AWS credential chain; for production use IAM roles/SSM/Secrets Manager.
+- Postgres wiring is optional; use `create_engine_from_url` when moving DB to RDS.
+
 ### How to run this batch
 ```bash
 # Use domain keyword file for discovery

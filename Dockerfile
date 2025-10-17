@@ -25,3 +25,4 @@ VOLUME ["/app/data", "/app/config", "/app/data/files", "/app/data/export"]
 CMD ["python", "-m", "src.uwss.cli"]
 
 
+

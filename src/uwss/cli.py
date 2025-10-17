@@ -331,6 +331,22 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_xt.set_defaults(func=_cmd_xt)
 
+	# s3-upload (optional: upload downloaded files to S3)
+	p_s3 = sub.add_parser("s3-upload", help="Upload files from data/files to S3 bucket/prefix")
+	p_s3.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_s3.add_argument("--files-dir", default=str(Path("data") / "files"))
+	p_s3.add_argument("--bucket", required=True)
+	p_s3.add_argument("--prefix", default="uwss/")
+	p_s3.add_argument("--region", default=None)
+
+	def _cmd_s3(args: argparse.Namespace) -> int:
+		from .upload import upload_files_to_s3
+		count = upload_files_to_s3(Path(args.db), Path(args.files_dir), args.bucket, args.prefix, args.region)
+		console.print(f"[green]Uploaded {count} files to s3://{args.bucket}/{args.prefix}[/green]")
+		return 0
+
+	p_s3.set_defaults(func=_cmd_s3)
+
 	# delete-doc by id
 	p_del = sub.add_parser("delete-doc", help="Delete a document by id")
 	p_del.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))

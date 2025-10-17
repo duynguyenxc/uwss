@@ -9,9 +9,18 @@ from .models import Base
 
 
 def create_sqlite_engine(db_path: Path):
-	engine = create_engine(f"sqlite:///{db_path}", future=True)
-	SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-	return engine, SessionLocal
+    engine = create_engine(f"sqlite:///{db_path}", future=True)
+    SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+    return engine, SessionLocal
+
+
+def create_engine_from_url(db_url: str):
+    """Create engine/session from a full DB URL (e.g., Postgres on RDS).
+    Example: postgresql+psycopg2://user:pass@host:5432/dbname
+    """
+    engine = create_engine(db_url, future=True)
+    SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+    return engine, SessionLocal
 
 
 def init_db(db_path: Path) -> None:
