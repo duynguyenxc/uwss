@@ -173,3 +173,48 @@ def backfill_source(db_path) -> int:
 		s.close()
 
 
+def resolve_duplicates_fuzzy(db_path, threshold: float = 0.9) -> int:
+	"""Merge likely-duplicate titles using fuzzy ratio on lowercase normalized titles.
+	A lightweight heuristic without external deps.
+	"""
+	engine, SessionLocal = create_sqlite_engine(db_path)
+	s = SessionLocal()
+	try:
+		# load all docs with titles
+		docs = [(d.id, (d.title or "").lower().strip()) for (d,) in s.execute(select(Document)).all() if (d.title or "").strip()]
+		# build buckets by first 20 chars to cut comparisons
+		from collections import defaultdict
+		buckets = defaultdict(list)
+		for _id, t in docs:
+			key = t[:20]
+			buckets[key].append((_id, t))
+		merged = 0
+		def ratio(a: str, b: str) -> float:
+			# simple token overlap ratio
+			sa, sb = set(a.split()), set(b.split())
+			if not sa or not sb:
+				return 0.0
+			inter = len(sa & sb)
+			union = len(sa | sb)
+			return inter / union
+		for key, items in buckets.items():
+			items_sorted = items[:]
+			while len(items_sorted) > 1:
+				base_id, base_t = items_sorted[0]
+				keep = s.get(Document, base_id)
+				rest = items_sorted[1:]
+				to_delete = []
+				for cand_id, cand_t in rest:
+					if ratio(base_t, cand_t) >= threshold:
+						other = s.get(Document, cand_id)
+						_merge_docs(keep, other)
+						s.delete(other)
+						to_delete.append((cand_id, cand_t))
+						merged += 1
+				items_sorted = [items_sorted[0]] + [x for x in rest if x not in to_delete]
+		s.commit()
+		return merged
+	finally:
+		s.close()
+
+

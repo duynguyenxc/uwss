@@ -331,6 +331,30 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_xt.set_defaults(func=_cmd_xt)
 
+	# delete-doc by id
+	p_del = sub.add_parser("delete-doc", help="Delete a document by id")
+	p_del.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_del.add_argument("--id", type=int, required=True)
+
+	def _cmd_del(args: argparse.Namespace) -> int:
+		from sqlalchemy import select
+		from .store import create_sqlite_engine, Document
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		s = SessionLocal()
+		try:
+			d = s.get(Document, args.id)
+			if not d:
+				console.print(f"[yellow]No document with id {args.id}[/yellow]")
+				return 0
+			s.delete(d)
+			s.commit()
+			console.print(f"[green]Deleted document {args.id}[/green]")
+			return 0
+		finally:
+			s.close()
+
+	p_del.set_defaults(func=_cmd_del)
+
 	# export-jsonl / export-csv
 	p_export = sub.add_parser("export", help="Export documents to JSONL or CSV")
 	p_export.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
@@ -579,6 +603,19 @@ def build_parser() -> argparse.ArgumentParser:
 		return 0
 
 	p_dedupe.set_defaults(func=_cmd_dedupe)
+
+	# dedupe-resolve-fuzzy
+	p_dfz = sub.add_parser("dedupe-resolve-fuzzy", help="Resolve duplicates by fuzzy title matching")
+	p_dfz.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_dfz.add_argument("--threshold", type=float, default=0.9)
+
+	def _cmd_dfz(args: argparse.Namespace) -> int:
+		from .clean import resolve_duplicates_fuzzy
+		merged = resolve_duplicates_fuzzy(Path(args.db), threshold=args.threshold)
+		console.print(f"[green]Fuzzy merged {merged} duplicates[/green]")
+		return 0
+
+	p_dfz.set_defaults(func=_cmd_dfz)
 
 	# normalize-metadata
 	p_norm = sub.add_parser("normalize-metadata", help="Normalize authors/venue/title/doi formatting")
