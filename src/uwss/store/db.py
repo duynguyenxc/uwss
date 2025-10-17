@@ -36,5 +36,8 @@ def migrate_db(db_path: Path) -> None:
 		if "topic" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN topic VARCHAR(100)"))
 			conn.commit()
+		if "checksum_sha256" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN checksum_sha256 VARCHAR(64)"))
+			conn.commit()
 
 

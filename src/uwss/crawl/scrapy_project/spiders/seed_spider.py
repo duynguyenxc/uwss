@@ -32,7 +32,7 @@ class SeedSpider(scrapy.Spider):
 			return
 		self.pages_crawled += 1
 
-		# Save the landing page as a candidate if keyword-relevant; extract basic HTML metadata
+        # Save the landing page as a candidate if keyword-relevant; extract basic HTML metadata
 		session = self.SessionLocal()
 		try:
 			url = response.url
@@ -44,7 +44,11 @@ class SeedSpider(scrapy.Spider):
 			# keyword filter: require at least one keyword match in title/body if patterns provided
 			is_relevant = True
 			if self.keyword_patterns:
-				full_text = (title or "") + "\n" + (" ".join(response.css("p::text").getall()) or "")
+                # Skip common non-content pages
+                skip_titles = {"education", "aci university", "cooperating organizations"}
+                if (title or "").strip().lower() in skip_titles:
+                    return
+                full_text = (title or "") + "\n" + (" ".join(response.css("p::text").getall()) or "")
 				is_relevant = any(p.search(full_text) for p in self.keyword_patterns)
 			if not is_relevant:
 				return

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import hashlib
 from typing import Optional
 
 import requests
@@ -46,13 +47,20 @@ def enrich_open_access_with_unpaywall(db_path: Path, contact_email: Optional[str
 		session.close()
 
 
+def _sha256_bytes(data: bytes) -> str:
+	h = hashlib.sha256()
+	h.update(data)
+	return h.hexdigest()
+
+
 def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_email: Optional[str] = None) -> int:
 	out_dir.mkdir(parents=True, exist_ok=True)
 	engine, SessionLocal = create_sqlite_engine(db_path)
 	session = SessionLocal()
 	count = 0
 	try:
-		q = session.execute(select(Document).where(Document.open_access == True))
+		# Only download documents that are open_access and missing local_path
+		q = session.execute(select(Document).where((Document.open_access == True) & ((Document.local_path == None) | (Document.local_path == ""))))
 		for (doc,) in q:
 			if count >= limit:
 				break
@@ -64,8 +72,10 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			if r.status_code != 200 or not r.content:
 				continue
 			ext = ".pdf" if "application/pdf" in r.headers.get("Content-Type", "") or url.lower().endswith(".pdf") else ".html"
-			name = safe_filename(doc.doi or doc.title or f"doc_{doc.id}") or f"doc_{doc.id}"
-			path = out_dir / f"{name}{ext}"
+			base = safe_filename(doc.doi or doc.title or f"doc_{doc.id}") or f"doc_{doc.id}"
+			# add id suffix to avoid name collision
+			name = f"{base}_id{doc.id}{ext}"
+			path = out_dir / name
 			with open(path, "wb") as f:
 				f.write(r.content)
 			doc.local_path = str(path)
@@ -73,6 +83,10 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			# provenance
 			doc.http_status = r.status_code
 			doc.file_size = path.stat().st_size if path.exists() else None
+			try:
+				doc.checksum_sha256 = _sha256_bytes(r.content)
+			except Exception:
+				doc.checksum_sha256 = None
 			count += 1
 		session.commit()
 		return count

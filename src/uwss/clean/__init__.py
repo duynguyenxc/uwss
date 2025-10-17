@@ -146,3 +146,30 @@ def normalize_metadata(db_path) -> int:
 		s.close()
 
 
+def backfill_source(db_path) -> int:
+	"""Fill missing Document.source based on heuristics from URL or venue."""
+	engine, SessionLocal = create_sqlite_engine(db_path)
+	s = SessionLocal()
+	try:
+		updated = 0
+		for (doc,) in s.execute(select(Document)).all():
+			if doc.source:
+				continue
+			src = None
+			url = (doc.source_url or "").lower()
+			if "crossref" in url:
+				src = "crossref"
+			elif "arxiv" in url:
+				src = "arxiv"
+			elif url.startswith("http"):
+				src = "web"
+			if src:
+				doc.source = src
+				s.add(doc)
+				updated += 1
+		s.commit()
+		return updated
+	finally:
+		s.close()
+
+

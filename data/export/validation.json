@@ -2,11 +2,19 @@
   "dup_doi": [],
   "dup_title": [
     {
+      "title": "artificial neural networks based predictive model for detecting the early-stage diabetes",
+      "count": 2
+    },
+    {
       "title": "corrosion inhibitors for reinforced concrete",
       "count": 3
     },
     {
       "title": "corrosion of reinforcement in concrete",
+      "count": 2
+    },
+    {
+      "title": "“a combine model for email classification in hindi language using supervised learning (nb, k-nn, dt, svm)”",
       "count": 2
     }
   ],

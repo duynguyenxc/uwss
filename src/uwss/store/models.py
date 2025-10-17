@@ -38,5 +38,7 @@ class Document(Base):
 	license: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 	file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 	oa_status: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+	# file integrity
+	checksum_sha256: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
 
 

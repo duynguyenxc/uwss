@@ -326,6 +326,8 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--year-min", type=int, default=None)
 	p_export.add_argument("--oa-only", action="store_true")
 	p_export.add_argument("--sort", choices=["relevance", "year"], default="relevance")
+	# skip missing-core records (no title and no doi)
+	p_export.add_argument("--skip-missing-core", action="store_true")
 
 	def _cmd_export(args: argparse.Namespace) -> int:
 		from sqlalchemy import select
@@ -340,6 +342,8 @@ def build_parser() -> argparse.ArgumentParser:
 				if d.relevance_score is not None and d.relevance_score < args.min_score:
 					continue
 				if args.year_min and d.year and d.year < args.year_min:
+					continue
+				if args.skip_missing_core and (not d.title and not d.doi):
 					continue
 				rows.append({
 					"id": d.id,
@@ -358,6 +362,7 @@ def build_parser() -> argparse.ArgumentParser:
 					"source": d.source,
 					"oa_status": d.oa_status,
 					"topic": d.topic,
+					"checksum_sha256": getattr(d, "checksum_sha256", None),
 				})
 			# OA filter
 			if args.oa_only:
@@ -565,6 +570,18 @@ def build_parser() -> argparse.ArgumentParser:
 		return 0
 
 	p_norm.set_defaults(func=_cmd_norm)
+
+	# backfill-source
+	p_bfs = sub.add_parser("backfill-source", help="Backfill missing Document.source from URL/venue")
+	p_bfs.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+
+	def _cmd_bfs(args: argparse.Namespace) -> int:
+		from .clean import backfill_source
+		n = backfill_source(Path(args.db))
+		console.print(f"[green]Backfilled source for {n} records[/green]")
+		return 0
+
+	p_bfs.set_defaults(func=_cmd_bfs)
 
 	return parser
 
