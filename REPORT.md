@@ -28,6 +28,7 @@
  - Added `stats` and `validate` commands to monitor quality and detect duplicates/missing fields.
  - Deduplication resolver merges duplicates (prefers OA, richer metadata, better source) and deletes redundant rows.
  - Normalization utility standardizes DOI/title/venue/authors formatting.
+ - Refactored package layout: `store/models.py`, `store/db.py` for clarity and maintainability.
 
 ## How to run locally (Windows PowerShell)
 ```bash
