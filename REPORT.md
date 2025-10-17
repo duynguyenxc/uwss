@@ -106,7 +106,8 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
   - File names include `_id{doc.id}` to avoid overwrites.
   - Captures `mime_type`, `fetched_at`, `checksum_sha256`, `url_hash_sha1`.
 - Scoring:
-  - Weighted title (0.7) over abstract (0.3), allow partial matches.
+  - Token + bigram matching; weighted title (0.8) over abstract (0.2).
+  - Enables clean export with min-score=0.05.
 - Scrapy spider:
   - Skip common non-content pages (Education/ACI University/Cooperating Organizations).
   - Require keyword match in title/body when keywords provided.
@@ -125,7 +126,7 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
 # Use domain keyword file for discovery
 python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 25
 
-# Score with improved weighting
+# Score with improved weighting (token+bigram, title-focused)
 python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
 
 # Clean
@@ -143,6 +144,10 @@ python -m src.uwss.cli stats --db data\uwss.sqlite --json-out data\export\stats.
 python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
 python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa.jsonl --min-score 0.0 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
 
+# Clean export profiles (min-score=0.05)
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
+
 # Fetch a few OA files (no overwrite)
 python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
 ```
@@ -151,7 +156,8 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5
 - Totals: `total=147`, `open_access=59`.
 - Sources: `arxiv 40`, `crossref 55`, `web 49`, `scrapy 3`.
 - Validation: no missing-core; a few similar titles remain (kept to avoid false merges).
-- Exports: `candidates.jsonl` (147, skip-missing-core + provenance), `candidates_oa.jsonl` (59). 
+- Exports: `candidates.jsonl` (147, skip-missing-core + provenance), `candidates_oa.jsonl` (59).
+- Clean exports: `candidates_clean_005.jsonl` (86), `candidates_oa_clean_005.jsonl` (29).
 - Fetch: downloaded 5 additional OA PDFs; files named with `_id{doc.id}`; provenance fields populated.
 
 ### Notes
