@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from sqlalchemy import String, Integer, Boolean, DateTime, Text, Float, create_engine
+from sqlalchemy import text as sql_text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 
@@ -36,6 +37,7 @@ class Document(Base):
 	http_status: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 	extractor: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 	license: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+	file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
 
 def create_sqlite_engine(db_path: Path) -> tuple:
@@ -47,4 +49,15 @@ def create_sqlite_engine(db_path: Path) -> tuple:
 def init_db(db_path: Path) -> None:
 	engine, _ = create_sqlite_engine(db_path)
 	Base.metadata.create_all(engine)
+
+
+def migrate_db(db_path: Path) -> None:
+	"""Lightweight migration: add missing columns if not present."""
+	engine, _ = create_sqlite_engine(db_path)
+	with engine.connect() as conn:
+		cols = conn.execute(sql_text("PRAGMA table_info(documents)")).fetchall()
+		names = {c[1] for c in cols}
+		if "file_size" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN file_size INTEGER"))
+			conn.commit()
 

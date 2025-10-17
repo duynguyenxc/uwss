@@ -84,6 +84,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_db.set_defaults(func=_cmd_db)
 
+	# db-migrate
+	p_mig = sub.add_parser("db-migrate", help="Run lightweight DB migrations")
+	p_mig.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+
+	def _cmd_migrate(args: argparse.Namespace) -> int:
+		from .store import migrate_db
+		migrate_db(Path(args.db))
+		console.print(f"[green]DB migration completed:[/green] {args.db}")
+		return 0
+
+	p_mig.set_defaults(func=_cmd_migrate)
+
 	# discover-openalex
 	p_openalex = sub.add_parser("discover-openalex", help="Fetch candidate metadata from OpenAlex")
 	p_openalex.add_argument("--config", default=str(Path("config") / "config.yaml"))
@@ -182,19 +194,28 @@ def build_parser() -> argparse.ArgumentParser:
 				issued = (item.get("issued") or {}).get("date-parts")
 				if issued and issued[0] and len(issued[0]) > 0:
 					year = int(issued[0][0])
-				doc = Document(
-					source_url=link or item.get("URL", ""),
-					doi=doi,
-					title=title,
-					authors=json.dumps(authors),
-					venue=(item.get("container-title") or [None])[0],
-					year=year,
-					open_access=False,
-					abstract=abstract,
-					status="metadata_only",
-				)
-				session.add(doc)
-				inserted += 1
+				# Deduplicate by DOI or title
+				exists = None
+				if doi:
+					exists = session.query(Document).filter(Document.doi == doi).first()
+				if not exists and title:
+					exists = session.query(Document).filter(Document.title == title).first()
+				if exists:
+					continue
+				else:
+					doc = Document(
+						source_url=link or item.get("URL", ""),
+						doi=doi,
+						title=title,
+						authors=json.dumps(authors),
+						venue=(item.get("container-title") or [None])[0],
+						year=year,
+						open_access=False,
+						abstract=abstract,
+						status="metadata_only",
+					)
+					session.add(doc)
+					inserted += 1
 			session.commit()
 			console.print(f"[green]Inserted {inserted} Crossref records into {args.db}[/green]")
 			return 0
@@ -229,6 +250,8 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_export.add_argument("--out", required=True, help="Output file path (.jsonl or .csv)")
 	p_export.add_argument("--min-score", type=float, default=0.0)
+	p_export.add_argument("--year-min", type=int, default=None)
+	p_export.add_argument("--sort", choices=["relevance", "year"], default="relevance")
 
 	def _cmd_export(args: argparse.Namespace) -> int:
 		from sqlalchemy import select
@@ -242,6 +265,8 @@ def build_parser() -> argparse.ArgumentParser:
 			for (d,) in q:
 				if d.relevance_score is not None and d.relevance_score < args.min_score:
 					continue
+				if args.year_min and d.year and d.year < args.year_min:
+					continue
 				rows.append({
 					"id": d.id,
 					"source_url": d.source_url,
@@ -253,7 +278,15 @@ def build_parser() -> argparse.ArgumentParser:
 					"relevance_score": d.relevance_score,
 					"status": d.status,
 					"local_path": d.local_path,
+					"open_access": d.open_access,
+					"license": d.license,
+					"file_size": d.file_size,
 				})
+			# Sorting
+			if args.sort == "relevance":
+				rows.sort(key=lambda x: (x.get("relevance_score") or 0.0), reverse=True)
+			elif args.sort == "year":
+				rows.sort(key=lambda x: (x.get("year") or 0))
 			out_path = Path(args.out)
 			out_path.parent.mkdir(parents=True, exist_ok=True)
 			if out_path.suffix.lower() == ".jsonl":

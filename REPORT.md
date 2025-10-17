@@ -10,6 +10,7 @@
   - Unpaywall enrichment to mark open-access and best OA URL.
 - CLI commands:
   - `uwss db-init --db data/uwss.sqlite`
+  - `uwss db-migrate --db data/uwss.sqlite`
   - `uwss discover-crossref --config config/config.yaml --db data/uwss.sqlite --max 25`
   - `uwss score-keywords --config config/config.yaml --db data/uwss.sqlite`
   - `uwss export --db data/uwss.sqlite --out data/export/candidates.jsonl --min-score 0.05`
@@ -27,6 +28,9 @@ python -m src.uwss.cli config-validate --config config\config.yaml
 # Initialize database
 python -m src.uwss.cli db-init --db data\uwss.sqlite
 
+# Run DB migration (adds file_size, idempotent)
+python -m src.uwss.cli db-migrate --db data\uwss.sqlite
+
 # Run discovery (Crossref) – example 50 items
 python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --max 50
 
@@ -34,7 +38,7 @@ python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\u
 python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
 
 # Export candidates (adjust min-score as needed)
-python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance
 
 # Enrich OA and download a few files
 python -m src.uwss.cli download-open --db data\uwss.sqlite --outdir data\files --limit 3 --config config\config.yaml
@@ -46,6 +50,7 @@ python -m src.uwss.cli download-open --db data\uwss.sqlite --outdir data\files -
 - Scoring updated `relevance_score` for 75 docs (includes previously inserted).
 - Export produced `data/export/candidates.jsonl` (75 items at threshold 0.0).
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
+  - Provenance: http_status + file_size được lưu khi tải.
 
 ## Notes / Next steps
 - Add export commands (JSONL/CSV) and keyword-based relevance scoring.

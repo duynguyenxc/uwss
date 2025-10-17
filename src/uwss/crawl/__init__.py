@@ -59,7 +59,7 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			if not url:
 				continue
 			headers = {"User-Agent": f"uwss/0.1 ({contact_email})" if contact_email else "uwss/0.1"}
-			r = requests.get(url, headers=headers, timeout=30)
+			r = requests.get(url, headers=headers, timeout=30, allow_redirects=True)
 			if r.status_code != 200 or not r.content:
 				continue
 			ext = ".pdf" if "application/pdf" in r.headers.get("Content-Type", "") or url.lower().endswith(".pdf") else ".html"
@@ -69,6 +69,9 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 				f.write(r.content)
 			doc.local_path = str(path)
 			doc.status = "fetched"
+			# provenance
+			doc.http_status = r.status_code
+			doc.file_size = path.stat().st_size if path.exists() else None
 			count += 1
 		session.commit()
 		return count
