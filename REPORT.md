@@ -164,3 +164,92 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5
 - Fuzzy title dedupe was skipped to keep runtime short; can be re-enabled later if needed.
 - Next: whitelist/blacklist for Scrapy via config; S3/RDS wiring; scheduled jobs.
 
+
+## Comprehensive Review (simple English, detailed)
+
+### 1) System status and pipeline
+- The system is stable. The full pipeline runs end-to-end:
+  1) Discover → 2) Score → 3) Clean (normalize + dedupe) → 4) Validate/Stats → 5) Export (with provenance) → 6) Fetch open-access files.
+- No file overwrite. Downloaded files use a suffix `_id{doc.id}`.
+- We save rich provenance for each file and record: `http_status`, `file_size`, `mime_type`, `fetched_at`, `checksum_sha256`, `url_hash_sha1`.
+- Scrapy now has whitelist domains and blacklist paths from `config/config.yaml` to reduce noise.
+
+### 2) All improvements done (summary)
+- Storage & provenance: added `mime_type`, `text_excerpt`, `url_hash_sha1`, `checksum_sha256`; idempotent DB migration.
+- Downloader: only downloads when `local_path` is empty; writes provenance; unique file names.
+- Scoring: changed to token + bigram, stronger weight on title; now a clean export with `min-score=0.05` is possible.
+- Scrapy: whitelist for domains; blacklist for common paths that do not contain target content; require keyword match in title/body.
+- Export: `--skip-missing-core` and `--include-provenance` flags; clean and full profiles.
+- Utilities: `delete-doc` (remove bad records), `backfill-source` (infer source), `extract-text-excerpt` (PDF/HTML to text excerpt).
+- Domain keywords file for concrete/corrosion discovery.
+
+### 3) Strengths of the project
+- Clean data with full provenance (easy to audit and reproduce).
+- No file overwrite; we also have checksum for integrity.
+- Less noise from crawling due to whitelist/blacklist rules.
+- Better scoring separates useful records; a clean export profile is available.
+- JSONL exports are simple and ready for next steps (like sequence extraction or analytics).
+
+### 4) What improved and why it matters
+- Before: many records had `relevance_score = 0.0`; hard to make a clean export. Less provenance; risk of file overwrite.
+- After: token+bigram scoring and title weight raise scores for relevant items; provenance is full; files never overwrite; clean profile at `min-score=0.05` is meaningful.
+
+### 5) Notable features
+- Rich provenance fields for traceability.
+- Clean export and OA clean export.
+- Scrapy domain/path controls to reduce noise.
+- Content excerpt (simple) from PDF/HTML to preview text quickly.
+
+### 6) How to run (short guide)
+```bash
+# 1) Validate and migrate
+python -m src.uwss.cli config-validate --config config\config.yaml
+python -m src.uwss.cli db-migrate --db data\uwss.sqlite
+
+# 2) Discovery and scoring
+python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 25
+python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
+
+# 3) Clean and check
+python -m src.uwss.cli dedupe-resolve --db data\uwss.sqlite
+python -m src.uwss.cli validate --db data\uwss.sqlite --json-out data\export\validation.json
+python -m src.uwss.cli stats --db data\uwss.sqlite --json-out data\export\stats.json
+
+# 4) Export (full and OA)
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa.jsonl --min-score 0.0 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
+
+# 5) Clean export (min-score=0.05)
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
+
+# 6) Download a few open-access files
+python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
+
+# 7) Scrapy crawl with whitelist/blacklist
+python -m src.uwss.cli crawl-seeds --seeds https://example.com --db data\uwss.sqlite --max-pages 10 --config config\config.yaml --keywords-file config\keywords_concrete.txt
+```
+
+### 7) How to view outputs and know it is improved
+- Check `data/export/stats.json` for totals, OA count, by source, and by year.
+- Check `data/export/validation.json` for duplicates and missing core fields (should be empty for missing_core).
+- Check JSONL exports: confirm `relevance_score` in clean files is ≥ 0.05; confirm provenance fields exist when `--include-provenance` is used.
+- Inspect `data/files/` to see new PDFs with `_id{doc.id}` suffix and no overwrite.
+
+### 8) Cloud readiness (what we prepared and why)
+- Dockerfile added: containerized app for simple and repeatable runs on ECS/Batch.
+- `deploy-cloud.md`: a guide for AWS ECS + S3 + RDS + logging + scheduling.
+- Why ECS/S3/RDS: simple to operate for batch jobs, scalable, cost-effective; S3 is durable for files; RDS gives a robust DB when scaling beyond SQLite.
+- ENV/Secrets: use AWS Secrets Manager or Parameter Store for safe configuration.
+
+### 9) Why these libraries and not others
+- Scrapy (vs Selenium first): Scrapy is fast and polite for static pages and respects robots.txt; Selenium is heavier for JS pages (use later if needed).
+- requests (vs httpx): simple and good enough for current sync flow; can switch to httpx if we move to async at scale.
+- pdfminer.six (vs PyMuPDF first): pure Python and easy to integrate; PyMuPDF is faster but needs extra native deps (we can add later for speed).
+- BeautifulSoup (vs lxml only): easy and enough for quick HTML text extraction; we can add lxml when parsing needs more speed.
+- SQLAlchemy (vs raw sqlite3): cleaner code, easier migration, and simpler to switch to Postgres.
+
+### 10) Sequence module (later)
+- Current data and files are clean and ready for sequence extraction.
+- Next steps after cloud-ready: extract time/value/unit/config from tables/figures/text, save JSON with provenance (page/caption), then build a simple next-step prediction baseline.
+
