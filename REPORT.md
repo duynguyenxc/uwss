@@ -18,6 +18,11 @@
   - `uwss download-open --db data/uwss.sqlite --outdir data/files --limit 3 --config config/config.yaml`
   - `uwss fetch --db data/uwss.sqlite --outdir data/files --limit 10 --config config/config.yaml`
 
+## Data cleanliness improvements
+- Normalized DOI/title/abstract; recorded `keywords_found` for explainability.
+- Added fields: `source`, `oa_status`, `file_size`; migration idempotent via `db-migrate`.
+- Export supports `--oa-only`, sorting, and year filters.
+
 ## How to run locally (Windows PowerShell)
 ```bash
 # From repo root
@@ -44,6 +49,7 @@ python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss
 
 # Export candidates (adjust min-score as needed)
 python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa.jsonl --min-score 0.0 --year-min 1995 --sort relevance --oa-only
 
 # Enrich OA and download a few files
 python -m src.uwss.cli download-open --db data\uwss.sqlite --outdir data\files --limit 3 --config config\config.yaml
@@ -58,6 +64,7 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
 - Fields populated: `source_url, doi, title, authors, venue, year, abstract (if provided), status=metadata_only`.
 - Scoring updated `relevance_score` for 75 docs (includes previously inserted).
 - Export produced `data/export/candidates.jsonl` (90 items at threshold 0.0).
+- OA-only export produced `data/export/candidates_oa.jsonl` (20 items).
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
   - Provenance: http_status + file_size được lưu khi tải.
 

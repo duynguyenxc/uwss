@@ -31,6 +31,7 @@ class Document(Base):
 	keywords_found: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON list of matched keywords
 	relevance_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 	status: Mapped[str] = mapped_column(String(40), default="not_fetched")
+	source: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # crossref|arxiv|openalex|...
 
 	# provenance
 	fetched_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
@@ -38,6 +39,7 @@ class Document(Base):
 	extractor: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 	license: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 	file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+	oa_status: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 
 
 def create_sqlite_engine(db_path: Path) -> tuple:
@@ -59,5 +61,11 @@ def migrate_db(db_path: Path) -> None:
 		names = {c[1] for c in cols}
 		if "file_size" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN file_size INTEGER"))
+			conn.commit()
+		if "source" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN source VARCHAR(50)"))
+			conn.commit()
+		if "oa_status" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN oa_status VARCHAR(50)"))
 			conn.commit()
 

@@ -36,6 +36,7 @@ def enrich_open_access_with_unpaywall(db_path: Path, contact_email: Optional[str
 			best_url = best.get("url_for_pdf") or best.get("url")
 			if is_oa and best_url:
 				doc.open_access = True
+				doc.oa_status = best.get("host_type") or js.get("oa_status") or None
 				# Prefer OA URL for download
 				doc.source_url = best_url
 				updated += 1

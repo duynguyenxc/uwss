@@ -38,9 +38,22 @@ def score_documents(db_path: Path, keywords: List[str], min_score: float = 0.0) 
 		q = session.execute(select(Document))
 		updated = 0
 		for (doc,) in q:
+			# normalize basic fields for cleanliness
+			if doc.doi:
+				doc.doi = doc.doi.strip().lower()
+			if doc.title:
+				doc.title = doc.title.strip()
+			if doc.abstract:
+				doc.abstract = doc.abstract.strip()
 			text = (doc.abstract or "") + "\n" + (doc.title or "")
 			score = compute_keyword_score(text, patterns)
 			doc.relevance_score = float(score)
+			# record matched keywords for explainability
+			found = []
+			for p, k in zip(patterns, keywords):
+				if p.search(text or ""):
+					found.append(k)
+			doc.keywords_found = json.dumps(sorted(set(found)))
 			updated += 1
 		session.commit()
 		return updated

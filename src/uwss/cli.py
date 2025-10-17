@@ -219,6 +219,7 @@ def build_parser() -> argparse.ArgumentParser:
 						open_access=False,
 						abstract=abstract,
 						status="metadata_only",
+						source="crossref",
 					)
 					session.add(doc)
 					inserted += 1
@@ -279,6 +280,7 @@ def build_parser() -> argparse.ArgumentParser:
 					open_access=True if pdf_link else False,
 					abstract=item.get("summary") or "",
 					status="metadata_only",
+					source="arxiv",
 				)
 				session.add(doc)
 				inserted += 1
@@ -317,6 +319,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--out", required=True, help="Output file path (.jsonl or .csv)")
 	p_export.add_argument("--min-score", type=float, default=0.0)
 	p_export.add_argument("--year-min", type=int, default=None)
+	p_export.add_argument("--oa-only", action="store_true")
 	p_export.add_argument("--sort", choices=["relevance", "year"], default="relevance")
 
 	def _cmd_export(args: argparse.Namespace) -> int:
@@ -347,7 +350,12 @@ def build_parser() -> argparse.ArgumentParser:
 					"open_access": d.open_access,
 					"license": d.license,
 					"file_size": d.file_size,
+					"source": d.source,
+					"oa_status": d.oa_status,
 				})
+			# OA filter
+			if args.oa_only:
+				rows = [r for r in rows if r.get("open_access")]
 			# Sorting
 			if args.sort == "relevance":
 				rows.sort(key=lambda x: (x.get("relevance_score") or 0.0), reverse=True)
