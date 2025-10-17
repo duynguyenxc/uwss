@@ -89,3 +89,72 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
  - Add provenance fields on download (HTTP status, size, extractor).
  - Plan Dockerfile and AWS setup after local stabilization.
 
+---
+
+## Latest improvements (feature branch: `feat/clean-output-download-scoring`)
+
+### Summary
+- Added provenance and cleanliness features without touching `main`.
+- Output now includes optional provenance fields; downloader avoids overwrites; exports can skip missing-core; discovery uses domain keyword file; simple content excerpt extraction enabled.
+
+### What changed
+- Storage/provenance:
+  - Added columns: `mime_type`, `text_excerpt`, `url_hash_sha1`, `checksum_sha256`.
+  - `db-migrate` updated to create missing columns idempotently.
+- Downloader (fetch/download-open):
+  - Only downloads OA docs missing `local_path`.
+  - File names include `_id{doc.id}` to avoid overwrites.
+  - Captures `mime_type`, `fetched_at`, `checksum_sha256`, `url_hash_sha1`.
+- Scoring:
+  - Weighted title (0.7) over abstract (0.3), allow partial matches.
+- Scrapy spider:
+  - Skip common non-content pages (Education/ACI University/Cooperating Organizations).
+  - Require keyword match in title/body when keywords provided.
+- Export:
+  - New flags: `--skip-missing-core` and `--include-provenance`.
+- Backfill & maintenance:
+  - `backfill-source` to fill `source` (crossref/arxiv/web) from URL.
+  - `delete-doc` to remove bad records by id.
+- Content excerpt (stub):
+  - `extract-text-excerpt` fills `text_excerpt` using PDF (pdfminer.six) / HTML (BeautifulSoup) when available.
+- Domain keywords file:
+  - Added `config/keywords_concrete.txt` from provided list for discovery.
+
+### How to run this batch
+```bash
+# Use domain keyword file for discovery
+python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 25
+
+# Score with improved weighting
+python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
+
+# Clean
+python -m src.uwss.cli delete-doc --db data\uwss.sqlite --id 91  # remove missing-core example
+python -m src.uwss.cli dedupe-resolve --db data\uwss.sqlite     # deterministic dedupe
+
+# Generate excerpts (PDF/HTML preferred, else abstract/title)
+python -m src.uwss.cli extract-text-excerpt --db data\uwss.sqlite --limit 100
+
+# Validate & stats
+python -m src.uwss.cli validate --db data\uwss.sqlite --json-out data\export\validation.json
+python -m src.uwss.cli stats --db data\uwss.sqlite --json-out data\export\stats.json
+
+# Export (with provenance)
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
+python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa.jsonl --min-score 0.0 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
+
+# Fetch a few OA files (no overwrite)
+python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
+```
+
+### Results snapshot
+- Totals: `total=147`, `open_access=59`.
+- Sources: `arxiv 40`, `crossref 55`, `web 49`, `scrapy 3`.
+- Validation: no missing-core; a few similar titles remain (kept to avoid false merges).
+- Exports: `candidates.jsonl` (147, skip-missing-core + provenance), `candidates_oa.jsonl` (59). 
+- Fetch: downloaded 5 additional OA PDFs; files named with `_id{doc.id}`; provenance fields populated.
+
+### Notes
+- Fuzzy title dedupe was skipped to keep runtime short; can be re-enabled later if needed.
+- Next: whitelist/blacklist for Scrapy via config; S3/RDS wiring; scheduled jobs.
+
