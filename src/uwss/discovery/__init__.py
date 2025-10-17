@@ -37,20 +37,28 @@ def fetch_openalex_page(params: Dict[str, str], cursor: Optional[str] = None, co
 
 
 def iter_openalex_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None) -> Iterable[Dict]:
-	params = build_openalex_query(keywords, year_filter, contact_email=contact_email)
-	cursor = "*"
-	count = 0
-	while True:
-		data = fetch_openalex_page(params, cursor, contact_email=contact_email)
-		results = data.get("results", [])
-		for item in results:
-			yield item
-			count += 1
-			if count >= max_records:
-				return
-		cursor = data.get("meta", {}).get("next_cursor")
-		if not cursor:
-			return
+    # Safer strategy: iterate per keyword with small pages and cursors, stop early
+    per_kw = max(10, min(25, max_records // max(1, len(list(keywords)))))
+    for kw in keywords:
+        params = build_openalex_query([kw], year_filter, per_page=per_kw, contact_email=contact_email)
+        cursor = "*"
+        got = 0
+        while True:
+            try:
+                data = fetch_openalex_page(params, cursor, contact_email=contact_email)
+            except Exception:
+                break
+            results = data.get("results", [])
+            for item in results:
+                yield item
+                got += 1
+                if got >= per_kw:
+                    break
+            if got >= per_kw:
+                break
+            cursor = data.get("meta", {}).get("next_cursor")
+            if not cursor:
+                break
 
 
 # ------------------------ Crossref ------------------------

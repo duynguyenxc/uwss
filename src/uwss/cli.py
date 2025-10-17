@@ -536,6 +536,30 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_val.set_defaults(func=_cmd_validate)
 
+	# dedupe-resolve
+	p_dedupe = sub.add_parser("dedupe-resolve", help="Resolve duplicates (DOI/title) and keep best record")
+	p_dedupe.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+
+	def _cmd_dedupe(args: argparse.Namespace) -> int:
+		from .clean import resolve_duplicates
+		res = resolve_duplicates(Path(args.db))
+		console.print(res)
+		return 0
+
+	p_dedupe.set_defaults(func=_cmd_dedupe)
+
+	# normalize-metadata
+	p_norm = sub.add_parser("normalize-metadata", help="Normalize authors/venue/title/doi formatting")
+	p_norm.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+
+	def _cmd_norm(args: argparse.Namespace) -> int:
+		from .clean import normalize_metadata
+		n = normalize_metadata(Path(args.db))
+		console.print(f"[green]Normalized {n} records[/green]")
+		return 0
+
+	p_norm.set_defaults(func=_cmd_norm)
+
 	return parser
 
 

@@ -26,6 +26,8 @@
 - Added fields: `source`, `oa_status`, `file_size`; migration idempotent via `db-migrate`.
 - Export supports `--oa-only`, sorting, and year filters.
  - Added `stats` and `validate` commands to monitor quality and detect duplicates/missing fields.
+ - Deduplication resolver merges duplicates (prefers OA, richer metadata, better source) and deletes redundant rows.
+ - Normalization utility standardizes DOI/title/venue/authors formatting.
 
 ## How to run locally (Windows PowerShell)
 ```bash
@@ -67,8 +69,9 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
 - arXiv discovery inserted 15 records.
 - Fields populated: `source_url, doi, title, authors, venue, year, abstract (if provided), status=metadata_only`.
 - Scoring updated `relevance_score` for 75 docs (includes previously inserted).
-- Export produced `data/export/candidates.jsonl` (90 items at threshold 0.0).
-- OA-only export produced `data/export/candidates_oa.jsonl` (20 items).
+ - Export produced `data/export/candidates.jsonl` (90 items at threshold 0.0).
+ - OA-only export produced `data/export/candidates_oa.jsonl` (20 items).
+ - After normalization + dedupe: total 68 docs; OA 19; no duplicate DOIs; titles dup reduced (2 groups remaining pending manual review).
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
   - Provenance: http_status + file_size được lưu khi tải.
 
