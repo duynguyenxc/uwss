@@ -608,6 +608,20 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_seqn.set_defaults(func=_cmd_seqn)
 
+	# forecast-sequences (linear baseline)
+	p_fseq = sub.add_parser("forecast-sequences", help="Forecast next step for sequences using linear baseline")
+	p_fseq.add_argument("--in", dest="inp", default=str(Path("data") / "series" / "sequences_norm.jsonl"))
+	p_fseq.add_argument("--out", dest="out", default=str(Path("data") / "series" / "forecast_linear.jsonl"))
+	p_fseq.add_argument("--horizon", type=float, default=30.0)
+
+	def _cmd_fseq(args: argparse.Namespace) -> int:
+		from .extract.forecast import forecast_linear
+		n = forecast_linear(Path(args.inp), Path(args.out), args.horizon)
+		console.print(f"[green]Forecasted {n} sequences[/green]")
+		return 0
+
+	p_fseq.set_defaults(func=_cmd_fseq)
+
 	return parser
 
 

@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Iterable, List, Optional, Tuple
 
 import fitz  # PyMuPDF
+import pdfplumber
 
 
 TIME_RE = re.compile(r"(?P<t>\d+(?:[\.,]\d+)?)\s*(?P<u>days?|months?|weeks?|hours?|cycles?|years?|mins?|minutes?)\b", re.IGNORECASE)
@@ -78,6 +79,39 @@ def extract_sequences_from_pdf(pdf_path: Path) -> List[SequencePoint]:
             all_points.extend(pts)
     finally:
         doc.close()
+    # Table-based extraction via pdfplumber
+    try:
+        with pdfplumber.open(pdf_path) as pl:
+            for p_idx, p in enumerate(pl.pages, start=1):
+                try:
+                    tables = p.extract_tables()
+                except Exception:
+                    tables = []
+                for tb in tables or []:
+                    # Heuristic: scan rows for time + value patterns
+                    for row in tb:
+                        if not row:
+                            continue
+                        row_text = " ".join([c if c else "" for c in row])
+                        t_match = TIME_RE.search(row_text)
+                        v_match = VAL_RE.search(row_text)
+                        if not (t_match and v_match):
+                            continue
+                        try:
+                            tval = _norm_num(t_match.group("t"))
+                            tun = t_match.group("u").lower()
+                            vval = _norm_num(v_match.group("v"))
+                            vun = v_match.group("vu")
+                        except Exception:
+                            continue
+                        seq_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{pdf_path}:{p_idx}:table"))
+                        all_points.append(SequencePoint(
+                            doc_path=str(pdf_path), page=p_idx, sequence_id=seq_id,
+                            time_value=tval, time_unit=tun, value=vval, value_unit=vun,
+                            variable=None
+                        ))
+    except Exception:
+        pass
     return all_points
 
 

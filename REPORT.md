@@ -10,6 +10,7 @@ python -m src.uwss.cli normalize-sequences --in data\series\sequences.jsonl --ou
 - Output example stats from current PDFs: total 37 points (days, weeks, years), across 4 documents.
 - Variable tagging (heuristic): crack_width, mass_loss (others unknown for now). Next: expand vocabulary.
 - Normalization adds fields: `time_days`, `value_norm`, `value_unit_norm` for consistent modeling.
+- Table extraction: added pdfplumber-based table scan; current sample did not increase count (tables may not contain time/value pairs), but logic is ready for documents with structured tables.
 - Next steps: table extraction (camelot/tabula), unit normalization, conditions (environment) parsing.
 # UWSS Progress Report
 
