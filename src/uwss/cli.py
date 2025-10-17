@@ -70,6 +70,143 @@ def build_parser() -> argparse.ArgumentParser:
 	p_validate.add_argument("--config", default=str(Path("config") / "config.yaml"), help="Path to config.yaml")
 	p_validate.set_defaults(func=cmd_config_validate)
 
+	# db-init
+	p_db = sub.add_parser("db-init", help="Initialize SQLite database schema")
+	p_db.add_argument("--db", default=str(Path("data") / "uwss.sqlite"), help="Path to SQLite DB file")
+
+	def _cmd_db(args: argparse.Namespace) -> int:
+		from .store import init_db
+		db_path = Path(args.db)
+		db_path.parent.mkdir(parents=True, exist_ok=True)
+		init_db(db_path)
+		console.print(f"[green]Initialized DB:[/green] {db_path}")
+		return 0
+
+	p_db.set_defaults(func=_cmd_db)
+
+	# discover-openalex
+	p_openalex = sub.add_parser("discover-openalex", help="Fetch candidate metadata from OpenAlex")
+	p_openalex.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_openalex.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_openalex.add_argument("--max", type=int, default=100, help="Max records to fetch")
+
+	def _cmd_openalex(args: argparse.Namespace) -> int:
+		from .discovery import iter_openalex_results
+		from .store import create_sqlite_engine, Document, Base
+		import json
+		
+		data = load_config(Path(args.config))
+		validate_config(data)
+		keywords = data["domain_keywords"]
+		contact_email = data.get("contact_email")
+		year_filter = data.get("year_filter")
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		Base.metadata.create_all(engine)
+		session = SessionLocal()
+		inserted = 0
+		try:
+			for item in iter_openalex_results(keywords, year_filter, max_records=args.max, contact_email=contact_email):
+				doi = (item.get("doi") or "")
+				title = item.get("title")
+				abstract = (item.get("abstract") or "")
+				source = item.get("primary_location", {})
+				source_url = source.get("source", {}).get("host_organization_url") or source.get("landing_page_url") or ""
+				open_access = bool(item.get("open_access", {}).get("is_oa"))
+				year = None
+				pub_date = item.get("publication_date")
+				if pub_date and len(pub_date) >= 4:
+					year = int(pub_date[:4])
+				authors = [a.get("author", {}).get("display_name") for a in item.get("authorships", []) if a.get("author")]
+				doc = Document(
+					source_url=source_url or item.get("id", ""),
+					doi=doi,
+					title=title,
+					authors=json.dumps([a for a in authors if a]),
+					venue=(item.get("host_venue", {}) or {}).get("display_name"),
+					year=year,
+					open_access=open_access,
+					abstract=abstract,
+					status="metadata_only",
+				)
+				session.add(doc)
+				inserted += 1
+			session.commit()
+			console.print(f"[green]Inserted {inserted} OpenAlex records into {args.db}[/green]")
+			return 0
+		except Exception as e:
+			session.rollback()
+			console.print(f"[red]Discovery failed:[/red] {e}")
+			return 1
+		finally:
+			session.close()
+
+	p_openalex.set_defaults(func=_cmd_openalex)
+
+	# discover-crossref
+	p_crossref = sub.add_parser("discover-crossref", help="Fetch candidate metadata from Crossref")
+	p_crossref.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_crossref.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_crossref.add_argument("--max", type=int, default=100)
+
+	def _cmd_crossref(args: argparse.Namespace) -> int:
+		from .discovery import iter_crossref_results
+		from .store import create_sqlite_engine, Document, Base
+		import json
+
+		data = load_config(Path(args.config))
+		validate_config(data)
+		keywords = data["domain_keywords"]
+		year_filter = data.get("year_filter")
+		contact_email = data.get("contact_email")
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		Base.metadata.create_all(engine)
+		session = SessionLocal()
+		inserted = 0
+		try:
+			for item in iter_crossref_results(keywords, year_filter, max_records=args.max, contact_email=contact_email):
+				doi = (item.get("DOI") or "")
+				title_list = item.get("title") or []
+				title = title_list[0] if title_list else None
+				abstract = (item.get("abstract") or "")
+				link = ""
+				for l in item.get("link", []) or []:
+					if l.get("URL"):
+						link = l["URL"]
+						break
+				authors = []
+				for a in item.get("author", []) or []:
+					name = " ".join([x for x in [a.get("given"), a.get("family")] if x])
+					if name:
+						authors.append(name)
+				year = None
+				issued = (item.get("issued") or {}).get("date-parts")
+				if issued and issued[0] and len(issued[0]) > 0:
+					year = int(issued[0][0])
+				doc = Document(
+					source_url=link or item.get("URL", ""),
+					doi=doi,
+					title=title,
+					authors=json.dumps(authors),
+					venue=(item.get("container-title") or [None])[0],
+					year=year,
+					open_access=False,
+					abstract=abstract,
+					status="metadata_only",
+				)
+				session.add(doc)
+				inserted += 1
+			session.commit()
+			console.print(f"[green]Inserted {inserted} Crossref records into {args.db}[/green]")
+			return 0
+		except Exception as e:
+			session.rollback()
+			console.print(f"[red]Discovery failed:[/red] {e}")
+			return 1
+		finally:
+			session.close()
+
+	p_crossref.set_defaults(func=_cmd_crossref)
+
 	return parser
 
 

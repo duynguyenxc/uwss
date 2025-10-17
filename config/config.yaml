@@ -24,3 +24,4 @@ year_filter: 1995
 rate_limits:
   requests_per_minute: 30
   per_domain: 10
+contact_email: your_email@example.com
