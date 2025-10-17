@@ -58,6 +58,10 @@ python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates
 # 7) Download some Open‑Access files (no overwrite)
 python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
 
+# Optional: throttle/jitter and JSON metrics logs
+python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 3 --config config\config.yaml --throttle-sec 0.6 --jitter-sec 0.3
+# Logs include JSON counters (downloads_ok/fail, status_counts, 429_5xx_count)
+
 # 8) Optional: extract text excerpts (PDF/HTML)
 pip install pdfminer.six beautifulsoup4
 python -m src.uwss.cli extract-text-excerpt --db data\uwss.sqlite --limit 100

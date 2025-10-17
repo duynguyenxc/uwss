@@ -134,6 +134,24 @@ This iteration focuses on robustness, cloud integration, and developer workflow:
 - DB portability: new helper `create_engine_from_url(db_url)` to support Postgres (e.g., RDS) alongside local SQLite.
 - CI workflow: added GitHub Actions smoke checks (install deps, import libs, parse CLI, help output) on PRs and feature pushes.
 
+### Observability and rate-limit tuning (this iteration)
+- Added structured counters/logs in downloader and Unpaywall enrichment:
+  - `downloads_ok`, `downloads_fail`, `status_counts`, `429_5xx_count`, `unpaywall_ok`, `unpaywall_fail`.
+  - Summary logs are emitted as JSON lines for easy CloudWatch ingestion.
+- Respect `Retry-After` header on `429/5xx` and use exponential backoff with jitter.
+- Per-host throttle + jitter, configurable via ENV or CLI flags:
+  - ENV: `UWSS_THROTTLE_SEC`, `UWSS_JITTER_SEC`
+  - CLI: `fetch --throttle-sec ... --jitter-sec ...`
+
+#### How to verify quickly
+```bash
+# Example: run fetch with explicit throttle/jitter
+python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 3 --config config\config.yaml --throttle-sec 0.6 --jitter-sec 0.3
+# Observe console JSON lines like:
+{"uwss_event": "unpaywall_enrich_summary", "updated": 12, "unpaywall_ok": 12, "unpaywall_fail": 3, "unpaywall_429_5xx": 1}
+{"uwss_event": "download_summary", "downloaded": 3, "downloads_ok": 3, "downloads_fail": 0, "status_counts": {"200": 3}, "429_5xx_count": 0}
+```
+
 ### How to run (Windows PowerShell)
 ```bash
 # Install new dependency
