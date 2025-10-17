@@ -23,6 +23,7 @@ class SequencePoint:
     time_unit: str
     value: float
     value_unit: Optional[str]
+    variable: Optional[str] = None
 
 
 def _norm_num(s: str) -> float:
@@ -52,8 +53,17 @@ def extract_sequences_from_text(text: str, doc_path: str, page: int) -> List[Seq
         except Exception:
             continue
         seq_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"{doc_path}:{page}"))
+        # Simple variable tagging
+        text_lower = (line + " " + (lines[i + 1] if i + 1 < len(lines) else "")).lower()
+        variable = None
+        if any(k in text_lower for k in ["potential", "half-cell", "mV"]):
+            variable = "half_cell_potential"
+        elif any(k in text_lower for k in ["mass loss", "weight loss", "%"]):
+            variable = "mass_loss"
+        elif any(k in text_lower for k in ["crack width", "mm", "µm"]):
+            variable = "crack_width"
         points.append(SequencePoint(doc_path=doc_path, page=page, sequence_id=seq_id,
-                                    time_value=tval, time_unit=tun, value=vval, value_unit=vun))
+                                    time_value=tval, time_unit=tun, value=vval, value_unit=vun, variable=variable))
     return points
 
 
@@ -84,6 +94,7 @@ def write_jsonl(points: Iterable[SequencePoint], out_path: Path) -> int:
                 "time_unit": pt.time_unit,
                 "value": pt.value,
                 "value_unit": pt.value_unit,
+                "variable": pt.variable,
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
             n += 1
@@ -91,7 +102,7 @@ def write_jsonl(points: Iterable[SequencePoint], out_path: Path) -> int:
 
 
 def validate_jsonl(series_path: Path) -> dict:
-    stats = {"total": 0, "by_unit": {}, "by_doc": {}}
+    stats = {"total": 0, "by_unit": {}, "by_doc": {}, "by_var": {}}
     if not series_path.exists():
         return stats
     with series_path.open("r", encoding="utf-8") as f:
@@ -104,6 +115,8 @@ def validate_jsonl(series_path: Path) -> dict:
             stats["by_unit"][tun] = stats["by_unit"].get(tun, 0) + 1
             doc = rec.get("doc_path") or ""
             stats["by_doc"][doc] = stats["by_doc"].get(doc, 0) + 1
+            var = rec.get("variable") or "unknown"
+            stats["by_var"][var] = stats["by_var"].get(var, 0) + 1
     return stats
 
 

@@ -7,6 +7,7 @@ python -m src.uwss.cli extract-sequences --pdf-dir data\files --out data\series\
 python -m src.uwss.cli validate-sequences --in data\series\sequences.jsonl
 ```
 - Output example stats from current PDFs: total 37 points (days, weeks, years), across 4 documents.
+- Variable tagging (heuristic): crack_width, mass_loss (others unknown for now). Next: expand vocabulary.
 - Next steps: table extraction (camelot/tabula), unit normalization, conditions (environment) parsing.
 # UWSS Progress Report
 
