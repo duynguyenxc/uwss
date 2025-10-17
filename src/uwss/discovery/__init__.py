@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional, Iterator
 
 import requests
+import feedparser
 
 
 OPENALEX_BASE = "https://api.openalex.org/works"
@@ -94,4 +95,36 @@ def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = 
 			if count >= max_records:
 				break
 		offset += rows
+
+
+# ------------------------ arXiv ------------------------
+ARXIV_API = "http://export.arxiv.org/api/query"
+
+
+def iter_arxiv_results(keywords: Iterable[str], max_records: int = 50) -> Iterator[Dict]:
+	# arXiv query uses + for spaces; limit simple OR across keywords
+	query_terms = [kw.replace(" ", "+") for kw in keywords]
+	query = "+OR+".join(f"all:{q}" for q in query_terms)
+	params = {
+		"search_query": query,
+		"start": 0,
+		"max_results": max_records,
+	}
+	url = ARXIV_API + "?" + "&".join(f"{k}={v}" for k, v in params.items())
+	feed = feedparser.parse(url)
+	for entry in feed.entries:
+		links = entry.get("links", [])
+		pdf_link = None
+		for l in links:
+			if l.get("type") == "application/pdf":
+				pdf_link = l.get("href")
+				break
+		yield {
+			"id": entry.get("id"),
+			"title": entry.get("title"),
+			"summary": entry.get("summary"),
+			"published": entry.get("published"),
+			"authors": [a.get("name") for a in entry.get("authors", [])],
+			"pdf_link": pdf_link,
+		}
 

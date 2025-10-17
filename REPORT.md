@@ -8,6 +8,7 @@
   - OpenAlex (currently blocked by 403 in this environment).
   - Crossref discovery working end-to-end.
   - Unpaywall enrichment to mark open-access and best OA URL.
+  - arXiv discovery (Atom API via feedparser), adds OA PDF links when available.
 - CLI commands:
   - `uwss db-init --db data/uwss.sqlite`
   - `uwss db-migrate --db data/uwss.sqlite`
@@ -34,6 +35,9 @@ python -m src.uwss.cli db-migrate --db data\uwss.sqlite
 # Run discovery (Crossref) – example 50 items
 python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --max 50
 
+# Run discovery (arXiv) – example 15 items
+python -m src.uwss.cli discover-arxiv --config config\config.yaml --db data\uwss.sqlite --max 15
+
 # Score relevance (keyword frequency-based)
 python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
 
@@ -46,9 +50,10 @@ python -m src.uwss.cli download-open --db data\uwss.sqlite --outdir data\files -
 
 ## Results
 - Crossref discovery inserted 50 records into `data/uwss.sqlite` (table `documents`).
+- arXiv discovery inserted 15 records.
 - Fields populated: `source_url, doi, title, authors, venue, year, abstract (if provided), status=metadata_only`.
 - Scoring updated `relevance_score` for 75 docs (includes previously inserted).
-- Export produced `data/export/candidates.jsonl` (75 items at threshold 0.0).
+- Export produced `data/export/candidates.jsonl` (90 items at threshold 0.0).
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
   - Provenance: http_status + file_size được lưu khi tải.
 

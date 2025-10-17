@@ -228,6 +228,63 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_crossref.set_defaults(func=_cmd_crossref)
 
+	# discover-arxiv
+	p_arxiv = sub.add_parser("discover-arxiv", help="Fetch candidate metadata from arXiv")
+	p_arxiv.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_arxiv.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_arxiv.add_argument("--max", type=int, default=50)
+
+	def _cmd_arxiv(args: argparse.Namespace) -> int:
+		from .discovery import iter_arxiv_results
+		from .store import create_sqlite_engine, Document, Base
+		import json
+		data = load_config(Path(args.config))
+		validate_config(data)
+		keywords = data["domain_keywords"]
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		Base.metadata.create_all(engine)
+		session = SessionLocal()
+		inserted = 0
+		try:
+			for item in iter_arxiv_results(keywords, max_records=args.max):
+				title = item.get("title")
+				pdf_link = item.get("pdf_link")
+				year = None
+				pub = item.get("published")
+				if pub and len(pub) >= 4:
+					year = int(pub[:4])
+				authors = item.get("authors") or []
+				# Deduplicate by title
+				exists = None
+				if title:
+					exists = session.query(Document).filter(Document.title == title).first()
+				if exists:
+					continue
+				doc = Document(
+					source_url=pdf_link or item.get("id", ""),
+					doi=None,
+					title=title,
+					authors=json.dumps(authors),
+					venue="arXiv",
+					year=year,
+					open_access=True if pdf_link else False,
+					abstract=item.get("summary") or "",
+					status="metadata_only",
+				)
+				session.add(doc)
+				inserted += 1
+			session.commit()
+			console.print(f"[green]Inserted {inserted} arXiv records into {args.db}[/green]")
+			return 0
+		except Exception as e:
+			session.rollback()
+			console.print(f"[red]Discovery failed:[/red] {e}")
+			return 1
+		finally:
+			session.close()
+
+	p_arxiv.set_defaults(func=_cmd_arxiv)
+
 	# score-keywords
 	p_score = sub.add_parser("score-keywords", help="Compute keyword relevance scores for documents in DB")
 	p_score.add_argument("--config", default=str(Path("config") / "config.yaml"))
