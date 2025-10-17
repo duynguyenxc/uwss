@@ -9,6 +9,60 @@
 - Robustness & CI: retries/backoff + Retry-After, throttle+jitter, S3 upload CLI, Postgres DB URL helper, CI smoke workflow (`feat/cloud-ci-s3`).
 
 ## System Design (high-level)
+- Diagram
+```
+            +-------------------+
+            |  Config (YAML)    |
+            +---------+---------+
+                      |
+                      v
+   +------------------+------------------+
+   |         CLI Orchestrator            |
+   |  (config-validate, discover,        |
+   |   score, clean, validate/stats,     |
+   |   export, fetch, crawl, s3-upload)  |
+   +-----------+--------------+----------+
+               |              |
+               |              |
+               v              v
+   +-----------+--+   +-------+---------+
+   | Discovery   |   | Crawl/Fetch       |
+   | (Crossref/  |   | (Scrapy +         |
+   |  arXiv/     |   |  downloader w/    |
+   |  OpenAlex)  |   |  retries, throttle)|
+   +------+------+
+          |
+          v
+   +------+-------------------------------+
+   |            Storage (DB)              |
+   |  SQLite (local) / Postgres (cloud)   |
+   |  documents: metadata + provenance    |
+   +------+-------------------+-----------+
+          |                   |
+          |                   v
+          |          +--------+--------+
+          |          |  Files (local)  |
+          |          |  data/files/    |
+          |          |  + S3 (optional)|
+          |          +--------+--------+
+          |
+          v
+   +------+-------------------------------+
+   |  Score  |  Clean | Validate | Stats |
+   |  (token+bigram,  | dedupe   |       |
+   |   title weight)  | normalize|       |
+   +------+-----------+----------+-------+
+          |
+          v
+   +------+-------------------------------+
+   |            Export (JSONL/CSV)        |
+   |  full / OA-only / clean (min-score)  |
+   |  optional provenance fields          |
+   +--------------------------------------+
+
+   Observability: JSON counters to stdout -> CloudWatch
+   CI: GitHub Actions smoke checks
+```
 - CLI Orchestrator (`src/uwss/cli.py`):
   - Commands map 1:1 to pipeline steps: config-validate, db-init/migrate, discover-*, score-keywords, normalize/dedupe, validate/stats, export, fetch, crawl-seeds, s3-upload.
   - Each command is small and composable; easy to schedule in cloud jobs.
