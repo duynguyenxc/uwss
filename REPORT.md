@@ -1,12 +1,36 @@
 # UWSS Progress Report
 
 ## Timeline / Milestones (high-level)
-- Week 1: Project setup (repo, venv, `src/uwss/`), SQLite + SQLAlchemy models, basic CLI.
-- Week 2: Discovery (Crossref, arXiv), export, stats/validate, deterministic dedupe and normalization.
-- Week 3: Provenance + downloader safety (no overwrite, unique filenames, checksums, mime), scoring with token+bigram + title weight, Scrapy whitelist/blacklist, content excerpt.
-- Week 4: Documentation improvements (`README.md`, `REPORT.md`), stable feature branch (`feat/clean-output-download-scoring`).
-- Week 5: Cloud prep: Dockerfile, deploy guide, create `main-next`/`main-legacy` branches.
-- Week 6: Robustness & CI: retries/backoff + Retry-After, throttle+jitter, S3 upload CLI, Postgres DB URL helper, CI smoke workflow (`feat/cloud-ci-s3`).
+- Project setup (repo, venv, `src/uwss/`), SQLite + SQLAlchemy models, basic CLI.
+- Discovery (Crossref, arXiv), export, stats/validate, deterministic dedupe and normalization.
+- Provenance + downloader safety (no overwrite, unique filenames, checksums, mime), scoring with token+bigram + title weight, Scrapy whitelist/blacklist, content excerpt.
+- Documentation improvements (`README.md`, `REPORT.md`), stable feature branch (`feat/clean-output-download-scoring`).
+- Cloud preparation: Dockerfile, deploy guide, create `main-next`/`main-legacy` branches.
+- Robustness & CI: retries/backoff + Retry-After, throttle+jitter, S3 upload CLI, Postgres DB URL helper, CI smoke workflow (`feat/cloud-ci-s3`).
+
+## System Design (high-level)
+- CLI Orchestrator (`src/uwss/cli.py`):
+  - Commands map 1:1 to pipeline steps: config-validate, db-init/migrate, discover-*, score-keywords, normalize/dedupe, validate/stats, export, fetch, crawl-seeds, s3-upload.
+  - Each command is small and composable; easy to schedule in cloud jobs.
+- Storage Layer (`src/uwss/store/`):
+  - SQLAlchemy models with SQLite by default, optional Postgres via `create_engine_from_url`.
+  - Provenance fields kept on `documents` (http_status, file_size, mime_type, fetched_at, checksum_sha256, url_hash_sha1).
+- Discovery Layer (`src/uwss/discovery/`):
+  - Crossref/arXiv/OpenAlex helpers insert normalized metadata into DB.
+  - Deterministic dedupe (DOI/title) keeps database clean.
+- Scoring Layer (`src/uwss/score/`):
+  - Token + bigram scoring with strong title weight produces meaningful `relevance_score` for filtering.
+- Crawl/Fetch Layer (`src/uwss/crawl/`):
+  - Scrapy seed spider with whitelist/blacklist reduces noise.
+  - Downloader enforces safe filenames (`_id{doc.id}`), no overwrite, provenance capture, retries/backoff, throttle+jitter.
+- Extract Layer (`src/uwss/extract/`):
+  - Basic PDF/HTML text excerpt for preview; upgrade path to PyMuPDF if needed.
+- Export Layer:
+  - JSONL/CSV with optional provenance; full/OA/clean profiles to serve different consumers.
+- Observability & CI:
+  - JSON counters printed to stdout for CloudWatch ingestion; CI smoke checks on PRs/pushes.
+- Cloud Integration:
+  - Docker image, ECS Scheduled Tasks or Batch for recurring jobs, S3 for files, optional RDS for DB, CloudWatch for logs/alarms.
 
 ## From-scratch checklist (how to reproduce)
 1) Python env
