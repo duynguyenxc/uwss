@@ -595,6 +595,19 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_seqv.set_defaults(func=_cmd_seqv)
 
+	# normalize-sequences
+	p_seqn = sub.add_parser("normalize-sequences", help="Normalize sequence units and add canonical fields")
+	p_seqn.add_argument("--in", dest="inp", default=str(Path("data") / "series" / "sequences.jsonl"))
+	p_seqn.add_argument("--out", dest="out", default=str(Path("data") / "series" / "sequences_norm.jsonl"))
+
+	def _cmd_seqn(args: argparse.Namespace) -> int:
+		from .extract.sequences import normalize_sequences_jsonl
+		stats = normalize_sequences_jsonl(Path(args.inp), Path(args.out))
+		console.print(stats)
+		return 0
+
+	p_seqn.set_defaults(func=_cmd_seqn)
+
 	return parser
 
 

@@ -120,3 +120,73 @@ def validate_jsonl(series_path: Path) -> dict:
     return stats
 
 
+# ---------------- Normalization -----------------
+
+def _norm_time_to_days(value: float, unit: str) -> float:
+    u = (unit or "").lower()
+    if u in ("day", "days"):
+        return value
+    if u in ("week", "weeks"):
+        return value * 7.0
+    if u in ("month", "months"):
+        return value * 30.0
+    if u in ("year", "years"):
+        return value * 365.0
+    if u in ("hour", "hours"):
+        return value / 24.0
+    if u in ("cycle", "cycles"):
+        # keep cycles as-is (no direct mapping); approximate as days
+        return value
+    return value
+
+
+def _norm_value(variable: Optional[str], value: float, vunit: Optional[str]) -> Tuple[float, str]:
+    var = (variable or "").lower()
+    vu = (vunit or "").lower()
+    # half-cell potential -> mV
+    if var == "half_cell_potential":
+        if vu == "v":
+            return value * 1000.0, "mV"
+        if vu == "mv" or vu == "":
+            return value, "mV"
+        return value, vu
+    # crack width -> mm
+    if var == "crack_width":
+        if vu == "µm" or vu == "um":
+            return value / 1000.0, "mm"
+        if vu == "mm" or vu == "":
+            return value, "mm"
+        return value, vu
+    # mass loss remains %
+    if var == "mass_loss":
+        if vu == "%" or vu == "":
+            return value, "%"
+        return value, vu
+    return value, vu or ""
+
+
+def normalize_sequences_jsonl(inp: Path, out: Path) -> dict:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    stats = {"written": 0}
+    if not inp.exists():
+        return stats
+    with inp.open("r", encoding="utf-8") as fin, out.open("w", encoding="utf-8") as fout:
+        for line in fin:
+            if not line.strip():
+                continue
+            rec = json.loads(line)
+            t_value = float(rec.get("time_value"))
+            t_unit = rec.get("time_unit") or ""
+            v_value = float(rec.get("value"))
+            v_unit = rec.get("value_unit")
+            variable = rec.get("variable")
+            t_days = _norm_time_to_days(t_value, t_unit)
+            v_norm, v_unit_norm = _norm_value(variable, v_value, v_unit)
+            rec["time_days"] = t_days
+            rec["value_norm"] = v_norm
+            rec["value_unit_norm"] = v_unit_norm
+            fout.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            stats["written"] += 1
+    return stats
+
+
