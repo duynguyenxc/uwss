@@ -427,6 +427,23 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_fetch.set_defaults(func=_cmd_fetch)
 
+	# fetch-advanced
+	p_fadv = sub.add_parser("fetch-advanced", help="Advanced PDF fetch: DOI content-negotiation + retries + checksums")
+	p_fadv.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_fadv.add_argument("--outdir", default=str(Path("data") / "files"))
+	p_fadv.add_argument("--limit", type=int, default=10)
+	p_fadv.add_argument("--config", default=str(Path("config") / "config.yaml"))
+
+	def _cmd_fadv(args: argparse.Namespace) -> int:
+		from .crawl.advanced_fetch import advanced_fetch_pdfs
+		data = load_config(Path(args.config))
+		contact_email = data.get("contact_email")
+		n = advanced_fetch_pdfs(Path(args.db), Path(args.outdir), args.limit, contact_email)
+		console.print(f"[green]Advanced fetched {n} PDFs[/green]")
+		return 0
+
+	p_fadv.set_defaults(func=_cmd_fadv)
+
 	# crawl-seeds (Scrapy wrapper)
 	p_crawl = sub.add_parser("crawl-seeds", help="Crawl seed URLs using Scrapy and store candidates")
 	p_crawl.add_argument("--seeds", required=True, help="Comma-separated seed URLs")

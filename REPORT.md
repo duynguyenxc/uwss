@@ -77,6 +77,17 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
  - After normalization + dedupe: total 68 docs; OA 19; no duplicate DOIs; titles dup reduced (2 groups remaining pending manual review).
  - Scrapy refined to save only keyword-relevant pages (title/body match) to reduce noise.
  - AI topic run: +50 (Crossref) +25 (arXiv); total 143 docs; OA 59; exports: `ai_candidates.jsonl` (138), `ai_candidates_oa.jsonl` (44); downloaded 5 OA PDFs; `ai_stats.json` and `ai_validation.json` saved.
+
+## Advanced Fetch (DOI Negotiation + Retries + Checksums)
+- Design: Try DOI content-negotiation (`Accept: application/pdf` to `doi.org/{doi}`); if fails, fallback to `source_url` with retries and exponential backoff; compute SHA-256 checksum to skip duplicates; update provenance (`file_size`, `status`).
+- Usage:
+```bash
+python -m src.uwss.cli fetch-advanced --db data\uwss.sqlite --outdir data\files --limit 10 --config config\config.yaml
+```
+- System design:
+  - Module `crawl/advanced_fetch.py`: `try_doi_pdf`, `download_with_retries`, `advanced_fetch_pdfs`.
+  - Idempotent: checksum-based dedupe; respects `status != fetched`.
+  - Extensible: can add per-domain rules.
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
   - Provenance: http_status + file_size được lưu khi tải.
 
