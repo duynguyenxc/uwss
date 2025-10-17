@@ -7,6 +7,8 @@ from typing import Optional
 
 import requests
 from sqlalchemy import select
+from datetime import datetime
+import mimetypes
 
 from ..store import create_sqlite_engine, Document
 
@@ -71,7 +73,11 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			r = requests.get(url, headers=headers, timeout=30, allow_redirects=True)
 			if r.status_code != 200 or not r.content:
 				continue
-			ext = ".pdf" if "application/pdf" in r.headers.get("Content-Type", "") or url.lower().endswith(".pdf") else ".html"
+			content_type = r.headers.get("Content-Type", "")
+			if not content_type:
+				guess, _ = mimetypes.guess_type(url)
+				content_type = guess or ""
+			ext = ".pdf" if "application/pdf" in content_type or url.lower().endswith(".pdf") else ".html"
 			base = safe_filename(doc.doi or doc.title or f"doc_{doc.id}") or f"doc_{doc.id}"
 			# add id suffix to avoid name collision
 			name = f"{base}_id{doc.id}{ext}"
@@ -83,10 +89,17 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			# provenance
 			doc.http_status = r.status_code
 			doc.file_size = path.stat().st_size if path.exists() else None
+			doc.mime_type = content_type or None
+			doc.fetched_at = datetime.utcnow()
 			try:
 				doc.checksum_sha256 = _sha256_bytes(r.content)
 			except Exception:
 				doc.checksum_sha256 = None
+			# url hash for dedupe/logging
+			try:
+				doc.url_hash_sha1 = hashlib.sha1((url or "").encode("utf-8")).hexdigest()
+			except Exception:
+				doc.url_hash_sha1 = None
 			count += 1
 		session.commit()
 		return count

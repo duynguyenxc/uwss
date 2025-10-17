@@ -30,6 +30,9 @@ class Document(Base):
 	status: Mapped[str] = mapped_column(String(40), default="not_fetched")
 	source: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # crossref|arxiv|openalex|...
 	topic: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+	# content summary and types
+	mime_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+	text_excerpt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
 	# provenance
 	fetched_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
@@ -40,5 +43,7 @@ class Document(Base):
 	oa_status: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 	# file integrity
 	checksum_sha256: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+	# url hash for dedupe
+	url_hash_sha1: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
 
 

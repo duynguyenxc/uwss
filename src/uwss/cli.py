@@ -318,6 +318,19 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_score.set_defaults(func=_cmd_score)
 
+	# extract-text-excerpt (stub)
+	p_xt = sub.add_parser("extract-text-excerpt", help="Populate text_excerpt from abstract/title (stub)")
+	p_xt.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_xt.add_argument("--limit", type=int, default=30)
+
+	def _cmd_xt(args: argparse.Namespace) -> int:
+		from .extract import extract_text_excerpt
+		n = extract_text_excerpt(Path(args.db), limit=args.limit)
+		console.print(f"[green]Populated text_excerpt for {n} records[/green]")
+		return 0
+
+	p_xt.set_defaults(func=_cmd_xt)
+
 	# export-jsonl / export-csv
 	p_export = sub.add_parser("export", help="Export documents to JSONL or CSV")
 	p_export.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
@@ -328,6 +341,8 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--sort", choices=["relevance", "year"], default="relevance")
 	# skip missing-core records (no title and no doi)
 	p_export.add_argument("--skip-missing-core", action="store_true")
+	# include-new-fields
+	p_export.add_argument("--include-provenance", action="store_true")
 
 	def _cmd_export(args: argparse.Namespace) -> int:
 		from sqlalchemy import select
@@ -345,7 +360,7 @@ def build_parser() -> argparse.ArgumentParser:
 					continue
 				if args.skip_missing_core and (not d.title and not d.doi):
 					continue
-				rows.append({
+				row = {
 					"id": d.id,
 					"source_url": d.source_url,
 					"doi": d.doi,
@@ -362,8 +377,14 @@ def build_parser() -> argparse.ArgumentParser:
 					"source": d.source,
 					"oa_status": d.oa_status,
 					"topic": d.topic,
-					"checksum_sha256": getattr(d, "checksum_sha256", None),
-				})
+				}
+				if args.include_provenance:
+					row["checksum_sha256"] = getattr(d, "checksum_sha256", None)
+					row["mime_type"] = getattr(d, "mime_type", None)
+					row["url_hash_sha1"] = getattr(d, "url_hash_sha1", None)
+					row["http_status"] = getattr(d, "http_status", None)
+					row["fetched_at"] = str(getattr(d, "fetched_at", "")) if getattr(d, "fetched_at", None) else None
+				rows.append(row)
 			# OA filter
 			if args.oa_only:
 				rows = [r for r in rows if r.get("open_access")]

@@ -39,5 +39,14 @@ def migrate_db(db_path: Path) -> None:
 		if "checksum_sha256" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN checksum_sha256 VARCHAR(64)"))
 			conn.commit()
+		if "mime_type" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN mime_type VARCHAR(100)"))
+			conn.commit()
+		if "text_excerpt" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN text_excerpt TEXT"))
+			conn.commit()
+		if "url_hash_sha1" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN url_hash_sha1 VARCHAR(40)"))
+			conn.commit()
 
 
