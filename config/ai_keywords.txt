@@ -1,0 +1,12 @@
+﻿artificial intelligence
+machine learning
+deep learning
+neural networks
+transformer model
+large language model
+foundation model
+computer vision
+natural language processing
+reinforcement learning
+graph neural network
+self-supervised learning

@@ -76,6 +76,7 @@ python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 1
  - OA-only export produced `data/export/candidates_oa.jsonl` (20 items).
  - After normalization + dedupe: total 68 docs; OA 19; no duplicate DOIs; titles dup reduced (2 groups remaining pending manual review).
  - Scrapy refined to save only keyword-relevant pages (title/body match) to reduce noise.
+ - AI topic run: +50 (Crossref) +25 (arXiv); total 143 docs; OA 59; exports: `ai_candidates.jsonl` (138), `ai_candidates_oa.jsonl` (44); downloaded 5 OA PDFs; `ai_stats.json` and `ai_validation.json` saved.
 - Unpaywall enrichment updated 5 records as open-access; downloader saved 3 files to `data/files/`.
   - Provenance: http_status + file_size được lưu khi tải.
 
