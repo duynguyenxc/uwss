@@ -1,5 +1,77 @@
 # UWSS Progress Report
 
+## Timeline / Milestones (high-level)
+- Week 1: Project setup (repo, venv, `src/uwss/`), SQLite + SQLAlchemy models, basic CLI.
+- Week 2: Discovery (Crossref, arXiv), export, stats/validate, deterministic dedupe and normalization.
+- Week 3: Provenance + downloader safety (no overwrite, unique filenames, checksums, mime), scoring with token+bigram + title weight, Scrapy whitelist/blacklist, content excerpt.
+- Week 4: Documentation improvements (`README.md`, `REPORT.md`), stable feature branch (`feat/clean-output-download-scoring`).
+- Week 5: Cloud prep: Dockerfile, deploy guide, create `main-next`/`main-legacy` branches.
+- Week 6: Robustness & CI: retries/backoff + Retry-After, throttle+jitter, S3 upload CLI, Postgres DB URL helper, CI smoke workflow (`feat/cloud-ci-s3`).
+
+## From-scratch checklist (how to reproduce)
+1) Python env
+   - Create venv and install deps: `python -m venv .\.venv && .\.venv\Scripts\activate && pip install -r requirements.txt`
+2) Config
+   - Edit `config/config.yaml` (contact email, keywords, whitelist/blacklist). Run `config-validate`.
+3) Database
+   - `db-init` (first time) and `db-migrate` (idempotent). File at `data/uwss.sqlite`.
+4) Discovery
+   - Run `discover-crossref`/`discover-arxiv` with keywords file. Expect new rows in `documents` table.
+5) Scoring & cleaning
+   - `score-keywords`, `normalize-metadata`, `dedupe-resolve`.
+6) Quality checks
+   - `validate` (missing_core=0, dup_doi=0), `stats` (total/OA/by source/year).
+7) Export
+   - `export` JSONL (full/OA/clean with `--min-score 0.05`, optional `--include-provenance`).
+8) Fetch
+   - `fetch` with safe downloads, provenance, retries/backoff. Optional throttle via flags/ENV.
+9) Optional S3
+   - `s3-upload` to sync `data/files/` to S3.
+10) Cloud
+   - Build Docker; deploy to ECS Scheduled Tasks; stream logs to CloudWatch; set env/secrets.
+
+## Detailed issues and fixes (selected)
+- Missing dependency `rich` (ModuleNotFoundError)
+  - Fix: `pip install -r requirements.txt`; keep `rich` pinned in requirements.
+- Indentation/TabError and SyntaxError in several modules (`models.py`, `db.py`, `clean/__init__.py`, `score/__init__.py`, Scrapy spider)
+  - Fix: Normalize indentation, remove stray `finally`, ensure consistent blocks; re-run lint/smoke.
+- Fuzzy dedupe very slow (>30 min)
+  - Decision: Skip by default; rely on deterministic dedupe; use `--min-score` for clean exports.
+- Overwrite risk on downloads
+  - Fix: Enforce unique filename suffix `_id{doc.id}`; only download when `local_path` is empty.
+- Provenance gaps
+  - Fix: Add `mime_type`, `text_excerpt`, `url_hash_sha1`, `checksum_sha256`; save `http_status`, `file_size`, `fetched_at` during download.
+- Crawl noise
+  - Fix: Scrapy whitelist domains + path blacklist from config; keyword filter in spider.
+- Stability for network errors
+  - Fix: HTTP retries/backoff with Retry-After, throttle+jitter, status counters.
+- Binary artifacts accidentally committed
+  - Fix: Remove PDFs from index; keep repo clean; prefer S3 for artifacts.
+
+## Technology choices (simple rationale)
+- Scrapy over Selenium: faster, polite, good for static/API pages; add browser automation only per-domain if needed.
+- requests (sync) first: simpler to maintain; can switch to httpx (async) if high concurrency is required later.
+- SQLAlchemy (SQLite local): clean schema/migration; easy to move to Postgres using URL helper.
+- pdfminer.six + BeautifulSoup: pure Python, good baseline; optional PyMuPDF later for tricky PDFs.
+- Docker: same runtime everywhere; easy ECS/Batch deploy.
+- AWS (S3, ECS, RDS, CloudWatch): standard, durable storage; managed compute and DB; native logging/alarms.
+- GitHub Actions: automatic smoke checks on PRs; prevent simple regressions.
+
+## What output looks like (how to judge quality)
+- `validation.json`: should show `missing_core=[]`, `dup_doi=[]`, limited `dup_title` groups.
+- `stats.json`: healthy totals; OA count; distribution by source/year.
+- Exports (`candidates*.jsonl`): meaningful `relevance_score`; clean profile smaller but more relevant; with provenance fields when enabled.
+- `data/files/`: new files with `_id{doc.id}`; integrity via checksum; mime_type recorded.
+
+## Risks and limitations
+- Fuzzy dedupe disabled by default due to time cost; can enable for special runs.
+- Basic excerpt extraction; PyMuPDF fallback to consider for tough PDFs (feature-flag).
+- JS-heavy pages are out-of-scope unless whitelisted for browser rendering.
+
+## Cloud readiness and ops
+- Current state: Ready for pilot ECS Scheduled Task; logs as JSON counters to CloudWatch.
+- Next: optional RDS Postgres; minimal CloudWatch alarms; per-domain throttling tune.
+
 ## What was added in this iteration
 - Project skeleton with Git, venv, src layout (`src/uwss/`).
 - Config validator CLI: `uwss config-validate --config config/config.yaml`.
