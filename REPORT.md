@@ -17,11 +17,15 @@
   - `uwss export --db data/uwss.sqlite --out data/export/candidates.jsonl --min-score 0.05`
   - `uwss download-open --db data/uwss.sqlite --outdir data/files --limit 3 --config config/config.yaml`
   - `uwss fetch --db data/uwss.sqlite --outdir data/files --limit 10 --config config/config.yaml`
+  - `uwss crawl-seeds --seeds https://example.com --db data/uwss.sqlite --max-pages 10`
+  - `uwss stats --db data/uwss.sqlite --json-out data/export/stats.json`
+  - `uwss validate --db data/uwss.sqlite --json-out data/export/validation.json`
 
 ## Data cleanliness improvements
 - Normalized DOI/title/abstract; recorded `keywords_found` for explainability.
 - Added fields: `source`, `oa_status`, `file_size`; migration idempotent via `db-migrate`.
 - Export supports `--oa-only`, sorting, and year filters.
+ - Added `stats` and `validate` commands to monitor quality and detect duplicates/missing fields.
 
 ## How to run locally (Windows PowerShell)
 ```bash

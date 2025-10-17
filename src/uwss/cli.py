@@ -421,6 +421,121 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_fetch.set_defaults(func=_cmd_fetch)
 
+	# crawl-seeds (Scrapy wrapper)
+	p_crawl = sub.add_parser("crawl-seeds", help="Crawl seed URLs using Scrapy and store candidates")
+	p_crawl.add_argument("--seeds", required=True, help="Comma-separated seed URLs")
+	p_crawl.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_crawl.add_argument("--max-pages", type=int, default=10)
+	p_crawl.add_argument("--keywords-file", default=None)
+
+	def _cmd_crawl(args: argparse.Namespace) -> int:
+		# Run seed_spider via Scrapy's CrawlerProcess programmatically
+		try:
+			from scrapy.crawler import CrawlerProcess
+			from .crawl.scrapy_project.spiders.seed_spider import SeedSpider
+			from .crawl.scrapy_project import settings as uwss_settings
+			process = CrawlerProcess(settings={
+				"ROBOTSTXT_OBEY": True,
+				"DOWNLOAD_DELAY": 1.0,
+				"CONCURRENT_REQUESTS_PER_DOMAIN": 2,
+				"DEFAULT_REQUEST_HEADERS": {
+					"User-Agent": "uwss/0.1 (respect robots)"
+				},
+			})
+			keywords_csv = None
+			if args.keywords_file:
+				keywords_csv = ",".join([k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()])
+			process.crawl(SeedSpider, start_urls=args.seeds, db_path=args.db, max_pages=args.max_pages, keywords=keywords_csv)
+			process.start()
+			console.print("[green]Seed crawl completed[/green]")
+			return 0
+		except Exception as e:
+			console.print(f"[red]Seed crawl failed:[/red] {e}")
+			return 1
+
+	p_crawl.set_defaults(func=_cmd_crawl)
+
+	# stats
+	p_stats = sub.add_parser("stats", help="Show dataset statistics (counts, OA ratio, by source/year)")
+	p_stats.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_stats.add_argument("--json-out", default=None)
+
+	def _cmd_stats(args: argparse.Namespace) -> int:
+		from sqlalchemy import select, func
+		from .store import create_sqlite_engine, Document
+		import json
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		s = SessionLocal()
+		try:
+			stats = {}
+			# totals
+			total = s.execute(select(func.count(Document.id))).scalar() or 0
+			stats["total"] = total
+			# oa
+			oa = s.execute(select(func.count(Document.id)).where(Document.open_access == True)).scalar() or 0
+			stats["open_access"] = oa
+			# by source
+			rows = s.execute(select(Document.source, func.count(Document.id)).group_by(Document.source)).all()
+			stats["by_source"] = {str(k): v for k, v in rows}
+			# by year
+			years = s.execute(select(Document.year, func.count(Document.id)).where(Document.year != None).group_by(Document.year)).all()
+			stats["by_year"] = {int(k): v for k, v in years if k is not None}
+			console.print(stats)
+			if args.json_out:
+				Path(args.json_out).parent.mkdir(parents=True, exist_ok=True)
+				Path(args.json_out).write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
+				console.print(f"[green]Saved stats to {args.json_out}[/green]")
+			return 0
+		finally:
+			s.close()
+
+	p_stats.set_defaults(func=_cmd_stats)
+
+	# validate
+	p_val = sub.add_parser("validate", help="Validate data quality: duplicates, missing fields, invalid years, broken files")
+	p_val.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_val.add_argument("--json-out", default=None)
+
+	def _cmd_validate(args: argparse.Namespace) -> int:
+		from sqlalchemy import select, func
+		from .store import create_sqlite_engine, Document
+		import json, os
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		s = SessionLocal()
+		issues = {"dup_doi": [], "dup_title": [], "missing_core": [], "invalid_year": [], "missing_files": []}
+		try:
+			# dup doi
+			dup_doi = s.execute(select(Document.doi, func.count(Document.id)).where(Document.doi != None).group_by(Document.doi).having(func.count(Document.id) > 1)).all()
+			issues["dup_doi"] = [{"doi": str(k), "count": int(c)} for (k, c) in dup_doi]
+			# dup title (case-insensitive)
+			dup_title = s.execute(select(func.lower(Document.title), func.count(Document.id)).where(Document.title != None).group_by(func.lower(Document.title)).having(func.count(Document.id) > 1)).all()
+			issues["dup_title"] = [{"title": str(k), "count": int(c)} for (k, c) in dup_title]
+			# missing core fields
+			rows = s.execute(select(Document.id, Document.title, Document.doi)).all()
+			for _id, title, doi in rows:
+				if not (title or doi):
+					issues["missing_core"].append(int(_id))
+			# invalid year
+			rows = s.execute(select(Document.id, Document.year)).all()
+			for _id, year in rows:
+				if year is not None and (year < 1900 or year > 2100):
+					issues["invalid_year"].append(int(_id))
+			# missing files
+			rows = s.execute(select(Document.id, Document.local_path)).all()
+			for _id, p in rows:
+				if p and not os.path.exists(p):
+					issues["missing_files"].append(int(_id))
+			console.print(issues)
+			if args.json_out:
+				Path(args.json_out).parent.mkdir(parents=True, exist_ok=True)
+				Path(args.json_out).write_text(json.dumps(issues, ensure_ascii=False, indent=2), encoding="utf-8")
+				console.print(f"[green]Saved validation to {args.json_out}[/green]")
+			return 0
+		finally:
+			s.close()
+
+	p_val.set_defaults(func=_cmd_validate)
+
 	return parser
 
 
