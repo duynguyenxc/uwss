@@ -99,6 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
 	# discover-openalex
 	p_openalex = sub.add_parser("discover-openalex", help="Fetch candidate metadata from OpenAlex")
 	p_openalex.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_openalex.add_argument("--keywords-file", default=None, help="Optional path to a newline-delimited keywords file")
 	p_openalex.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_openalex.add_argument("--max", type=int, default=100, help="Max records to fetch")
 
@@ -110,6 +111,8 @@ def build_parser() -> argparse.ArgumentParser:
 		data = load_config(Path(args.config))
 		validate_config(data)
 		keywords = data["domain_keywords"]
+		if args.keywords_file:
+			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
 		contact_email = data.get("contact_email")
 		year_filter = data.get("year_filter")
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
@@ -157,6 +160,7 @@ def build_parser() -> argparse.ArgumentParser:
 	# discover-crossref
 	p_crossref = sub.add_parser("discover-crossref", help="Fetch candidate metadata from Crossref")
 	p_crossref.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_crossref.add_argument("--keywords-file", default=None)
 	p_crossref.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_crossref.add_argument("--max", type=int, default=100)
 
@@ -168,6 +172,8 @@ def build_parser() -> argparse.ArgumentParser:
 		data = load_config(Path(args.config))
 		validate_config(data)
 		keywords = data["domain_keywords"]
+		if args.keywords_file:
+			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
 		year_filter = data.get("year_filter")
 		contact_email = data.get("contact_email")
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
@@ -231,6 +237,7 @@ def build_parser() -> argparse.ArgumentParser:
 	# discover-arxiv
 	p_arxiv = sub.add_parser("discover-arxiv", help="Fetch candidate metadata from arXiv")
 	p_arxiv.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_arxiv.add_argument("--keywords-file", default=None)
 	p_arxiv.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_arxiv.add_argument("--max", type=int, default=50)
 
@@ -241,6 +248,8 @@ def build_parser() -> argparse.ArgumentParser:
 		data = load_config(Path(args.config))
 		validate_config(data)
 		keywords = data["domain_keywords"]
+		if args.keywords_file:
+			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
 		Base.metadata.create_all(engine)
 		session = SessionLocal()
@@ -384,6 +393,25 @@ def build_parser() -> argparse.ArgumentParser:
 		return 0
 
 	p_dl.set_defaults(func=_cmd_dl)
+
+	# fetch: enrich OA + download
+	p_fetch = sub.add_parser("fetch", help="Enrich OA (Unpaywall) then download files")
+	p_fetch.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_fetch.add_argument("--outdir", default=str(Path("data") / "files"))
+	p_fetch.add_argument("--limit", type=int, default=10)
+	p_fetch.add_argument("--config", default=str(Path("config") / "config.yaml"))
+
+	def _cmd_fetch(args: argparse.Namespace) -> int:
+		from .crawl import download_open_links, enrich_open_access_with_unpaywall
+		data = load_config(Path(args.config))
+		contact_email = data.get("contact_email")
+		enriched = enrich_open_access_with_unpaywall(Path(args.db), contact_email=contact_email, limit=200)
+		console.print(f"[blue]Enriched OA via Unpaywall: {enriched}[/blue]")
+		n = download_open_links(Path(args.db), Path(args.outdir), limit=args.limit, contact_email=contact_email)
+		console.print(f"[green]Downloaded {n} files[/green]")
+		return 0
+
+	p_fetch.set_defaults(func=_cmd_fetch)
 
 	return parser
 

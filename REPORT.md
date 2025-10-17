@@ -16,6 +16,7 @@
   - `uwss score-keywords --config config/config.yaml --db data/uwss.sqlite`
   - `uwss export --db data/uwss.sqlite --out data/export/candidates.jsonl --min-score 0.05`
   - `uwss download-open --db data/uwss.sqlite --outdir data/files --limit 3 --config config/config.yaml`
+  - `uwss fetch --db data/uwss.sqlite --outdir data/files --limit 10 --config config/config.yaml`
 
 ## How to run locally (Windows PowerShell)
 ```bash
@@ -46,6 +47,9 @@ python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates
 
 # Enrich OA and download a few files
 python -m src.uwss.cli download-open --db data\uwss.sqlite --outdir data\files --limit 3 --config config\config.yaml
+
+# Or use combined fetch command
+python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 10 --config config\config.yaml
 ```
 
 ## Results
