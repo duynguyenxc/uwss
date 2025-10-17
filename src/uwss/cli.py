@@ -566,6 +566,35 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_norm.set_defaults(func=_cmd_norm)
 
+	# extract-sequences
+	p_seq = sub.add_parser("extract-sequences", help="Extract time series (time,value) from PDFs into JSONL")
+	p_seq.add_argument("--pdf-dir", default=str(Path("data") / "files"))
+	p_seq.add_argument("--out", default=str(Path("data") / "series" / "sequences.jsonl"))
+
+	def _cmd_seq(args: argparse.Namespace) -> int:
+		from .extract.sequences import extract_sequences_from_pdf, write_jsonl
+		pdf_dir = Path(args.pdf_dir)
+		out = Path(args.out)
+		all_points = []
+		for p in pdf_dir.glob("*.pdf"):
+			all_points.extend(extract_sequences_from_pdf(p))
+		n = write_jsonl(all_points, out)
+		console.print(f"[green]Extracted {n} sequence points to {out}[/green]")
+		return 0
+
+	p_seq.set_defaults(func=_cmd_seq)
+
+	# validate-sequences
+	p_seqv = sub.add_parser("validate-sequences", help="Validate sequence JSONL stats")
+	p_seqv.add_argument("--in", dest="inp", default=str(Path("data") / "series" / "sequences.jsonl"))
+	def _cmd_seqv(args: argparse.Namespace) -> int:
+		from .extract.sequences import validate_jsonl
+		stats = validate_jsonl(Path(args.inp))
+		console.print(stats)
+		return 0
+
+	p_seqv.set_defaults(func=_cmd_seqv)
+
 	return parser
 
 

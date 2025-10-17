@@ -1,3 +1,13 @@
+## Sequence Extraction (Time-Series)
+- Goal: turn publication content into time→value sequences with units/conditions for downstream forecasting.
+- Approach: PDF text extraction (PyMuPDF), regex heuristics for time (days/months/weeks/years/cycles) and values (with units), per-page grouping; JSONL output.
+- Commands:
+```bash
+python -m src.uwss.cli extract-sequences --pdf-dir data\files --out data\series\sequences.jsonl
+python -m src.uwss.cli validate-sequences --in data\series\sequences.jsonl
+```
+- Output example stats from current PDFs: total 37 points (days, weeks, years), across 4 documents.
+- Next steps: table extraction (camelot/tabula), unit normalization, conditions (environment) parsing.
 # UWSS Progress Report
 
 ## What was added in this iteration
