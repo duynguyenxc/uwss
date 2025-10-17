@@ -480,11 +480,18 @@ def build_parser() -> argparse.ArgumentParser:
 	p_fetch.add_argument("--outdir", default=str(Path("data") / "files"))
 	p_fetch.add_argument("--limit", type=int, default=10)
 	p_fetch.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_fetch.add_argument("--throttle-sec", type=float, default=None, help="Global per-host throttle seconds (override env UWSS_THROTTLE_SEC)")
+	p_fetch.add_argument("--jitter-sec", type=float, default=None, help="Extra random jitter seconds (override env UWSS_JITTER_SEC)")
 
 	def _cmd_fetch(args: argparse.Namespace) -> int:
 		from .crawl import download_open_links, enrich_open_access_with_unpaywall
 		data = load_config(Path(args.config))
 		contact_email = data.get("contact_email")
+		# allow overrides for throttle/jitter via flags
+		if args.throttle_sec is not None:
+			os.environ["UWSS_THROTTLE_SEC"] = str(args.throttle_sec)
+		if args.jitter_sec is not None:
+			os.environ["UWSS_JITTER_SEC"] = str(args.jitter_sec)
 		enriched = enrich_open_access_with_unpaywall(Path(args.db), contact_email=contact_email, limit=200)
 		console.print(f"[blue]Enriched OA via Unpaywall: {enriched}[/blue]")
 		n = download_open_links(Path(args.db), Path(args.outdir), limit=args.limit, contact_email=contact_email)
