@@ -1,0 +1,10 @@
+__pycache__/
+.venv/
+.cursor/
+.DS_Store
+*.pyc
+build/
+dist/
+.pytest_cache/
+.coverage
+.env
