@@ -207,6 +207,94 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_crossref.set_defaults(func=_cmd_crossref)
 
+	# score-keywords
+	p_score = sub.add_parser("score-keywords", help="Compute keyword relevance scores for documents in DB")
+	p_score.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_score.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_score.add_argument("--min", type=float, default=0.0)
+
+	def _cmd_score(args: argparse.Namespace) -> int:
+		from .score import score_documents
+		data = load_config(Path(args.config))
+		validate_config(data)
+		keywords = data["domain_keywords"]
+		updated = score_documents(Path(args.db), keywords, args.min)
+		console.print(f"[green]Scored {updated} documents[/green]")
+		return 0
+
+	p_score.set_defaults(func=_cmd_score)
+
+	# export-jsonl / export-csv
+	p_export = sub.add_parser("export", help="Export documents to JSONL or CSV")
+	p_export.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_export.add_argument("--out", required=True, help="Output file path (.jsonl or .csv)")
+	p_export.add_argument("--min-score", type=float, default=0.0)
+
+	def _cmd_export(args: argparse.Namespace) -> int:
+		from sqlalchemy import select
+		from .store import create_sqlite_engine, Document
+		import json, csv
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		session = SessionLocal()
+		try:
+			q = session.execute(select(Document))
+			rows = []
+			for (d,) in q:
+				if d.relevance_score is not None and d.relevance_score < args.min_score:
+					continue
+				rows.append({
+					"id": d.id,
+					"source_url": d.source_url,
+					"doi": d.doi,
+					"title": d.title,
+					"authors": d.authors,
+					"venue": d.venue,
+					"year": d.year,
+					"relevance_score": d.relevance_score,
+					"status": d.status,
+					"local_path": d.local_path,
+				})
+			out_path = Path(args.out)
+			out_path.parent.mkdir(parents=True, exist_ok=True)
+			if out_path.suffix.lower() == ".jsonl":
+				with open(out_path, "w", encoding="utf-8") as f:
+					for r in rows:
+						f.write(json.dumps(r, ensure_ascii=False) + "\n")
+			elif out_path.suffix.lower() == ".csv":
+				if rows:
+					with open(out_path, "w", encoding="utf-8", newline="") as f:
+						writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+						writer.writeheader()
+						writer.writerows(rows)
+			else:
+				raise ValueError("Unsupported extension. Use .jsonl or .csv")
+			console.print(f"[green]Exported {len(rows)} records to {out_path}[/green]")
+			return 0
+		finally:
+			session.close()
+
+	p_export.set_defaults(func=_cmd_export)
+
+	# download-open (basic)
+	p_dl = sub.add_parser("download-open", help="Download open-access links for a small batch")
+	p_dl.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_dl.add_argument("--outdir", default=str(Path("data") / "files"))
+	p_dl.add_argument("--limit", type=int, default=5)
+	p_dl.add_argument("--config", default=str(Path("config") / "config.yaml"))
+
+	def _cmd_dl(args: argparse.Namespace) -> int:
+		from .crawl import download_open_links, enrich_open_access_with_unpaywall
+		data = load_config(Path(args.config))
+		contact_email = data.get("contact_email")
+		# Try to enrich OA first to improve hit rate
+		enriched = enrich_open_access_with_unpaywall(Path(args.db), contact_email=contact_email, limit=50)
+		console.print(f"[blue]Enriched OA via Unpaywall: {enriched}[/blue]")
+		n = download_open_links(Path(args.db), Path(args.outdir), limit=args.limit, contact_email=contact_email)
+		console.print(f"[green]Downloaded {n} files[/green]")
+		return 0
+
+	p_dl.set_defaults(func=_cmd_dl)
+
 	return parser
 
 
