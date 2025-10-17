@@ -6,6 +6,7 @@
 - SQLite storage with SQLAlchemy (`data/uwss.sqlite`) and `db-init` command.
 - Discovery modules:
   - OpenAlex (currently blocked by 403 in this environment).
+  - OpenAlex updated: per-keyword small pages + custom user agent/email; still zero returns here (likely remote throttling), but logic enabled.
   - Crossref discovery working end-to-end.
   - Unpaywall enrichment to mark open-access and best OA URL.
   - arXiv discovery (Atom API via feedparser), adds OA PDF links when available.

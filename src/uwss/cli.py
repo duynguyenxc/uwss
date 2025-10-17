@@ -114,13 +114,14 @@ def build_parser() -> argparse.ArgumentParser:
 		if args.keywords_file:
 			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
 		contact_email = data.get("contact_email")
+		user_agent = data.get("user_agent")
 		year_filter = data.get("year_filter")
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
 		Base.metadata.create_all(engine)
 		session = SessionLocal()
 		inserted = 0
 		try:
-			for item in iter_openalex_results(keywords, year_filter, max_records=args.max, contact_email=contact_email):
+			for item in iter_openalex_results(keywords, year_filter, max_records=args.max, contact_email=contact_email, user_agent=user_agent):
 				doi = (item.get("doi") or "")
 				title = item.get("title")
 				abstract = (item.get("abstract") or "")

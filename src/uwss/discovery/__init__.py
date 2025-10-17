@@ -24,19 +24,19 @@ def build_openalex_query(keywords: Iterable[str], year_filter: Optional[int] = N
 	return params
 
 
-def fetch_openalex_page(params: Dict[str, str], cursor: Optional[str] = None, contact_email: Optional[str] = None) -> Dict:
+def fetch_openalex_page(params: Dict[str, str], cursor: Optional[str] = None, contact_email: Optional[str] = None, user_agent: Optional[str] = None) -> Dict:
 	p = dict(params)
 	if cursor:
 		p["cursor"] = cursor
 	headers = {}
 	if contact_email:
-		headers["User-Agent"] = f"uwss/0.1 (+{contact_email})"
+		headers["User-Agent"] = user_agent or f"uwss/0.1 (+{contact_email})"
 	resp = requests.get(OPENALEX_BASE, params=p, headers=headers, timeout=30)
 	resp.raise_for_status()
 	return resp.json()
 
 
-def iter_openalex_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None) -> Iterable[Dict]:
+def iter_openalex_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None, user_agent: Optional[str] = None) -> Iterable[Dict]:
     # Safer strategy: iterate per keyword with small pages and cursors, stop early
     per_kw = max(10, min(25, max_records // max(1, len(list(keywords)))))
     for kw in keywords:
@@ -45,7 +45,7 @@ def iter_openalex_results(keywords: Iterable[str], year_filter: Optional[int] = 
         got = 0
         while True:
             try:
-                data = fetch_openalex_page(params, cursor, contact_email=contact_email)
+                data = fetch_openalex_page(params, cursor, contact_email=contact_email, user_agent=user_agent)
             except Exception:
                 break
             results = data.get("results", [])
