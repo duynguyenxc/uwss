@@ -483,6 +483,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_crawl.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_crawl.add_argument("--max-pages", type=int, default=10)
 	p_crawl.add_argument("--keywords-file", default=None)
+	p_crawl.add_argument("--config", default=str(Path("config") / "config.yaml"), help="Path to config.yaml (for whitelist/blacklist)")
 
 	def _cmd_crawl(args: argparse.Namespace) -> int:
 		# Run seed_spider via Scrapy's CrawlerProcess programmatically
@@ -498,10 +499,24 @@ def build_parser() -> argparse.ArgumentParser:
 					"User-Agent": "uwss/0.1 (respect robots)"
 				},
 			})
+			# keywords
 			keywords_csv = None
 			if args.keywords_file:
 				keywords_csv = ",".join([k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()])
-			process.crawl(SeedSpider, start_urls=args.seeds, db_path=args.db, max_pages=args.max_pages, keywords=keywords_csv)
+			# whitelist/blacklist from config (optional)
+			wl_csv = None
+			bl_csv = None
+			try:
+				data = load_config(Path(args.config))
+				wl = data.get("scrapy_whitelist_domains") or []
+				bl = data.get("scrapy_path_blacklist") or []
+				if wl:
+					wl_csv = ",".join([str(d).strip() for d in wl if str(d).strip()])
+				if bl:
+					bl_csv = ",".join([str(p).strip() for p in bl if str(p).strip()])
+			except Exception:
+				pass
+			process.crawl(SeedSpider, start_urls=args.seeds, db_path=args.db, max_pages=args.max_pages, keywords=keywords_csv, allowed_domains_extra=wl_csv, path_blocklist=bl_csv)
 			process.start()
 			console.print("[green]Seed crawl completed[/green]")
 			return 0

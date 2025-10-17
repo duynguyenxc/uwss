@@ -11,7 +11,7 @@ class SeedSpider(scrapy.Spider):
 		"ROBOTSTXT_OBEY": True,
 	}
 
-	def __init__(self, start_urls=None, db_path="data/uwss.sqlite", max_pages: int = 10, keywords: str|None = None, *args, **kwargs):
+	def __init__(self, start_urls=None, db_path="data/uwss.sqlite", max_pages: int = 10, keywords: str|None = None, allowed_domains_extra: str|None = None, path_blocklist: str|None = None, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.start_urls = start_urls.split(",") if isinstance(start_urls, str) else (start_urls or [])
 		self.db_path = db_path
@@ -25,6 +25,14 @@ class SeedSpider(scrapy.Spider):
 		Base.metadata.create_all(engine)
 		# Restrict to seed domains
 		self.allowed_domains = [urlparse(u).netloc for u in self.start_urls if u]
+		# Extra whitelist domains (comma-separated)
+		self.allowed_domains_extra = []
+		if allowed_domains_extra:
+			self.allowed_domains_extra = [d.strip().lower() for d in allowed_domains_extra.split(",") if d.strip()]
+		# Path blacklist (substring match)
+		self.path_blocklist = []
+		if path_blocklist:
+			self.path_blocklist = [p.strip().lower() for p in path_blocklist.split(",") if p.strip()]
 
 	def parse(self, response):
 		# Limit total pages
@@ -67,6 +75,11 @@ class SeedSpider(scrapy.Spider):
 			parsed = urlparse(next_url)
 			if parsed.scheme not in ("http", "https"):
 				continue
-			if parsed.netloc not in self.allowed_domains:
+			domain_ok = (parsed.netloc in self.allowed_domains) or (parsed.netloc.lower() in self.allowed_domains_extra)
+			if not domain_ok:
+				continue
+			# Blocklist path substrings
+			path_l = (parsed.path or "").lower()
+			if any(b in path_l for b in self.path_blocklist):
 				continue
 			yield scrapy.Request(next_url, callback=self.parse)
