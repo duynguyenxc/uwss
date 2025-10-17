@@ -1,1 +1,26 @@
-domain_keywords:\n  - reinforced concrete corrosion experiment\n  - long term durability concrete\n  - concrete chloride diffusion test\n  - reinforcement corrosion long duration exposure\n  - reinforced concrete half-cell potential experiment\n  - accelerated corrosion test concrete\n  - freeze-thaw concrete long term test\n  - wet-dry cyclic exposure concrete experiment\n  - reinforced concrete crack width over time\n  - reinforced concrete mass loss rebar corrosion\ndomain_sources:\n  - https://api.openalex.org\n  - https://www.crossref.org\n  - https://arxiv.org\n  - https://scholar.google.com\n  - https://ascelibrary.org\n  - https://www.concrete.org\n  - https://www.fhwa.dot.gov\n  - https://data.gov\nmax_depth: 2\nfile_types: [pdf, html, docx, txt, csv]\nyear_filter: 1995\nrate_limits:\n  requests_per_minute: 30\n  per_domain: 10\n
+﻿domain_keywords:
+  - reinforced concrete corrosion experiment
+  - long term durability concrete
+  - concrete chloride diffusion test
+  - reinforcement corrosion long duration exposure
+  - reinforced concrete half-cell potential experiment
+  - accelerated corrosion test concrete
+  - freeze-thaw concrete long term test
+  - wet-dry cyclic exposure concrete experiment
+  - reinforced concrete crack width over time
+  - reinforced concrete mass loss rebar corrosion
+domain_sources:
+  - https://api.openalex.org
+  - https://www.crossref.org
+  - https://arxiv.org
+  - https://scholar.google.com
+  - https://ascelibrary.org
+  - https://www.concrete.org
+  - https://www.fhwa.dot.gov
+  - https://data.gov
+max_depth: 2
+file_types: [pdf, html, docx, txt, csv]
+year_filter: 1995
+rate_limits:
+  requests_per_minute: 30
+  per_domain: 10
