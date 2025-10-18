@@ -150,6 +150,16 @@
 - Current state: Ready for pilot ECS Scheduled Task; logs as JSON counters to CloudWatch.
 - Next: optional RDS Postgres; minimal CloudWatch alarms; per-domain throttling tune.
 
+### Cloud hardening (this edit)
+- Added `.dockerignore` to keep image small and avoid shipping local data/DB files.
+- Moved `pdfminer.six` into `requirements.txt` (single install step, better Docker layer caching).
+- Added `psycopg2-binary` (optional) to prepare for Postgres/RDS without image rebuild later.
+- Updated `Dockerfile` to install dependencies once from `requirements.txt` and include `bash` to support multi-command task entries when needed on ECS.
+- Impact:
+  - Smaller, faster builds; no accidental inclusion of local data in images.
+  - Easier ECS task commands (can chain with `bash -lc`), or keep one-command tasks for simplicity.
+  - Ready to point to Postgres via `UWSS_DB_URL` when moving to RDS.
+
 ## Cloud concepts (simple)
 - S3 (Simple Storage Service): cloud folder for files. We upload PDFs/HTML here. It is durable (safe), cheap, and easy to access from other jobs.
 - ECS (Elastic Container Service): runs our Docker container on a schedule. Think of it like a timer that runs our CLI commands daily.

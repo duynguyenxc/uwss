@@ -8,12 +8,13 @@ WORKDIR /app
 
 # System deps (if needed for lxml/pdfminer performance)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
     build-essential \
     libxml2-dev libxslt1-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
-RUN pip install --upgrade pip && pip install -r requirements.txt && pip install pdfminer.six
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
