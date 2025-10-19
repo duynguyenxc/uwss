@@ -114,6 +114,4 @@ python -m src.uwss.cli crawl-seeds --seeds https://example.com \
 ## License / contributions
 Internal research use. Open issues/PRs welcome.
 
-Universal Web-Scraping System (Local-first)
-Create venv: .\\.venv\\Scripts\\activate\
-Install: pip install -r requirements.txt\n- Config: config/config.yaml\n
+
