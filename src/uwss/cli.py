@@ -433,21 +433,46 @@ def build_parser() -> argparse.ArgumentParser:
 				rows.sort(key=lambda x: (x.get("relevance_score") or 0.0), reverse=True)
 			elif args.sort == "year":
 				rows.sort(key=lambda x: (x.get("year") or 0))
-			out_path = Path(args.out)
-			out_path.parent.mkdir(parents=True, exist_ok=True)
-			if out_path.suffix.lower() == ".jsonl":
-				with open(out_path, "w", encoding="utf-8") as f:
-					for r in rows:
-						f.write(json.dumps(r, ensure_ascii=False) + "\n")
-			elif out_path.suffix.lower() == ".csv":
-				if rows:
-					with open(out_path, "w", encoding="utf-8", newline="") as f:
-						writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+			
+			# Handle S3 URLs
+			if args.out.startswith("s3://"):
+				import boto3
+				from urllib.parse import urlparse
+				parsed = urlparse(args.out)
+				bucket = parsed.netloc
+				key = parsed.path.lstrip("/")
+				
+				s3 = boto3.client("s3")
+				if key.endswith(".jsonl"):
+					content = "\n".join(json.dumps(r, ensure_ascii=False) for r in rows)
+					s3.put_object(Bucket=bucket, Key=key, Body=content.encode("utf-8"))
+				elif key.endswith(".csv"):
+					if rows:
+						import io
+						output = io.StringIO()
+						writer = csv.DictWriter(output, fieldnames=list(rows[0].keys()))
 						writer.writeheader()
 						writer.writerows(rows)
+						s3.put_object(Bucket=bucket, Key=key, Body=output.getvalue().encode("utf-8"))
+				else:
+					raise ValueError("Unsupported extension. Use .jsonl or .csv")
 			else:
-				raise ValueError("Unsupported extension. Use .jsonl or .csv")
-			console.print(f"[green]Exported {len(rows)} records to {out_path}[/green]")
+				# Local file handling
+				out_path = Path(args.out)
+				out_path.parent.mkdir(parents=True, exist_ok=True)
+				if out_path.suffix.lower() == ".jsonl":
+					with open(out_path, "w", encoding="utf-8") as f:
+						for r in rows:
+							f.write(json.dumps(r, ensure_ascii=False) + "\n")
+				elif out_path.suffix.lower() == ".csv":
+					if rows:
+						with open(out_path, "w", encoding="utf-8", newline="") as f:
+							writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+							writer.writeheader()
+							writer.writerows(rows)
+				else:
+					raise ValueError("Unsupported extension. Use .jsonl or .csv")
+			console.print(f"[green]Exported {len(rows)} records to {args.out}[/green]")
 			return 0
 		finally:
 			session.close()

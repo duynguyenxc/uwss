@@ -78,10 +78,10 @@ def resolve_duplicates(db_path) -> dict:
 			s.flush()
 			result["merged_by_doi"] += 1
 
-		# By title (lower) where DOI is null/empty
+		# By title (lower) - handle all title duplicates regardless of DOI
 		groups = s.execute(
 			select(func.lower(Document.title), func.count(Document.id))
-			.where((Document.title != None) & ((Document.doi == None) | (Document.doi == "")))
+			.where(Document.title != None)
 			.group_by(func.lower(Document.title))
 			.having(func.count(Document.id) > 1)
 		).all()
