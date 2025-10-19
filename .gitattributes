@@ -1,0 +1,15 @@
+# GitHub language detection
+# Exclude data files from language statistics
+data/files/* linguist-vendored
+data/export/* linguist-vendored
+data/*.sqlite linguist-vendored
+
+# Mark Python files explicitly
+*.py linguist-detectable
+src/**/*.py linguist-detectable
+
+# Mark configuration files
+*.yaml linguist-detectable
+*.yml linguist-detectable
+*.txt linguist-detectable
+*.md linguist-detectable
