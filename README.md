@@ -1,4 +1,4 @@
-# 🚀 **UWSS - COMPREHENSIVE WEB DATA COLLECTION SYSTEM**
+# 🚀 **UWSS - Universal Web-Scraping System**
 
 > **Automated system for collecting academic data from multiple sources, processing and exporting high-quality data.**
 
