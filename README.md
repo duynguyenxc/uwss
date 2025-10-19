@@ -1,221 +1,246 @@
-# UWSS — Universal Web‑Scraping System
+# 🚀 **UWSS - HỆ THỐNG THU THẬP DỮ LIỆU WEB TOÀN DIỆN**
 
-UWSS discovers, filters, downloads, and exports web resources (not only papers) for a topic. It produces clean, stable outputs with full provenance and simple CLI operations. Local‑first by design, cloud‑ready when needed.
+> **Hệ thống tự động thu thập dữ liệu học thuật từ nhiều nguồn khác nhau, xử lý và xuất dữ liệu có chất lượng cao.**
 
-## 🎯 **FINAL STATUS: PRODUCTION-READY**
-- ✅ **100% Data Quality**: No duplicates, no missing data, perfect validation
-- ✅ **Robust Pipeline**: End-to-end stability with error handling
-- ✅ **Clean Outputs**: High-quality exports with full provenance
-- ✅ **Docker Ready**: Production container with optimized build
-- ✅ **Cloud Ready**: AWS ECS/S3/RDS deployment ready
+## 🎯 **MỤC ĐÍCH DỰ ÁN**
 
-## Highlights
-- **Perfect Data Quality**: 100% clean data with zero duplicates, full provenance tracking
-- **Robust Downloads**: HTTP retries with exponential backoff, unique filenames, no overwrites
-- **Smart Scoring**: Token + bigram scoring with title weighting for meaningful relevance scores
-- **Noise Control**: Scrapy whitelist/blacklist filters for clean crawling
-- **Multiple Export Formats**: JSONL/CSV with provenance, OA-only, and clean profiles
-- **Cloud Integration**: Docker + AWS ECS/S3/RDS with scheduled tasks and logging
+**UWSS (Universal Web-Scraping System)** được phát triển để giải quyết vấn đề thu thập dữ liệu học thuật từ nhiều nguồn khác nhau một cách tự động và hiệu quả. Thay vì phải truy cập từng website riêng lẻ, hệ thống có thể:
 
-## Repository overview
-- `src/uwss/` — core package and CLI
-  - `store/` — SQLAlchemy models, DB migration helpers
-  - `discovery/` — Crossref, arXiv, OpenAlex search helpers
-  - `crawl/` — downloader and Scrapy project for seed crawling
-  - `score/` — keyword tokenizer + bigram relevance scoring
-  - `clean/` — normalize, deterministic dedupe, utilities (delete/backfill)
-  - `extract/` — text excerpt extraction (PDF/HTML)
-- `config/` — `config.yaml`, domain keyword lists
-- `data/` — local database (`uwss.sqlite`), files, and exports
-- `Dockerfile`, `deploy-cloud.md` — container and cloud deployment notes
-- `REPORT.md` — detailed progress and design report
+- **Tự động tìm kiếm** tài liệu học thuật từ các nguồn uy tín
+- **Lọc và đánh giá** mức độ liên quan của tài liệu
+- **Tải xuống và lưu trữ** các file PDF/HTML
+- **Xuất dữ liệu** theo nhiều định dạng khác nhau
 
-## 🚀 **COMPLETE LOCAL SETUP & RUNNING GUIDE**
+## 🏗️ **Ý TƯỞNG HỆ THỐNG**
 
-### **Step 1: Environment Setup**
+### **Vấn đề cần giải quyết**
+- Thu thập dữ liệu học thuật thủ công rất tốn thời gian
+- Các nguồn dữ liệu khác nhau có format khác nhau
+- Khó đánh giá mức độ liên quan của tài liệu
+- Dữ liệu trùng lặp và không đồng nhất
+
+### **Giải pháp**
+- **Tích hợp nhiều nguồn**: OpenAlex, Crossref, arXiv, web crawling
+- **Scoring thông minh**: Đánh giá mức độ liên quan dựa trên keywords
+- **Làm sạch dữ liệu**: Loại bỏ duplicates, chuẩn hóa format
+- **Pipeline tự động**: Từ discovery đến export hoàn toàn tự động
+
+## ⚙️ **CÁCH HOẠT ĐỘNG**
+
+```
+1. DISCOVERY (Khám phá)
+   ├── OpenAlex API → Tìm kiếm papers
+   ├── Crossref API → Metadata học thuật
+   ├── arXiv API → Preprints
+   └── Scrapy → Web crawling
+
+2. PROCESSING (Xử lý)
+   ├── Scoring → Đánh giá relevance
+   ├── Cleaning → Loại bỏ duplicates
+   ├── Normalization → Chuẩn hóa dữ liệu
+   └── Validation → Kiểm tra chất lượng
+
+3. OUTPUT (Xuất dữ liệu)
+   ├── Download → Tải file PDF/HTML
+   ├── Export → JSONL/CSV formats
+   └── Statistics → Báo cáo thống kê
+```
+
+## 🛠️ **CÔNG NGHỆ SỬ DỤNG**
+
+### **Backend**
+- **Python 3.8+**: Ngôn ngữ chính
+- **SQLAlchemy**: ORM cho database
+- **SQLite**: Database local (có thể chuyển sang PostgreSQL)
+
+### **Data Sources**
+- **OpenAlex API**: Academic papers database
+- **Crossref API**: DOI metadata
+- **arXiv API**: Preprints
+- **Scrapy**: Web crawling framework
+
+### **Processing**
+- **Requests**: HTTP client với retry logic
+- **BeautifulSoup**: HTML parsing
+- **pdfminer.six**: PDF text extraction
+- **Token + Bigram**: Relevance scoring
+
+### **Deployment**
+- **Docker**: Containerization
+- **AWS**: Cloud deployment (ECS, S3, RDS)
+
+## 📁 **CẤU TRÚC DỰ ÁN**
+
+```
+uwss/
+├── src/uwss/                    # Core package
+│   ├── store/                   # Database models
+│   ├── discovery/               # API integrations
+│   ├── crawl/                   # Download & web crawling
+│   ├── score/                   # Relevance scoring
+│   ├── clean/                   # Data cleaning
+│   ├── extract/                 # Text extraction
+│   ├── upload/                  # S3 integration
+│   └── cli.py                   # Command-line interface
+├── config/                      # Configuration files
+│   ├── config.yaml              # Main config
+│   └── keywords_concrete.txt    # Domain keywords
+├── data/                        # Local data
+│   ├── uwss.sqlite              # SQLite database
+│   ├── files/                   # Downloaded PDF/HTML files
+│   └── export/                  # Export results
+├── Dockerfile                   # Container config
+├── requirements.txt             # Python dependencies
+└── README.md                    # This file
+```
+
+### **Mục đích các file/folder**
+
+- **`src/uwss/`**: Code chính của hệ thống
+- **`config/`**: Cấu hình keywords và sources
+- **`data/`**: Dữ liệu local (database, files, exports)
+- **`Dockerfile`**: Để containerize ứng dụng
+- **`requirements.txt`**: Danh sách thư viện Python cần thiết
+
+## 🚀 **SETUP VÀ CHẠY TRÊN LOCAL**
+
+### **Yêu cầu hệ thống**
+- **Python 3.8+**: Có thể cài từ python.org
+- **RAM**: Tối thiểu 2GB (khuyến nghị 4GB+)
+- **Disk**: ~500MB cho dependencies + dữ liệu
+- **OS**: Windows, macOS, Linux đều được
+
+### **Bước 1: Clone và setup môi trường**
 ```bash
-# Create and activate virtual environment
-python -m venv .\.venv
-.\.venv\Scripts\activate
+# Clone repository
+git clone <repository-url>
+cd uwss
 
-# Install all dependencies
+# Tạo virtual environment (khuyến nghị)
+python -m venv .venv
+
+# Kích hoạt virtual environment
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+
+# Cài đặt dependencies
 pip install -r requirements.txt
 ```
 
-### **Step 2: Database Initialization**
+### **Bước 2: Khởi tạo database**
 ```bash
-# Validate configuration
-python -m src.uwss.cli config-validate --config config\config.yaml
+# Validate config
+python -m src.uwss.cli config-validate --config config/config.yaml
 
-# Initialize database (first time only)
-python -m src.uwss.cli db-init --db data\uwss.sqlite
+# Khởi tạo database
+python -m src.uwss.cli db-init --db data/uwss.sqlite
 
-# Run database migration (adds new columns)
-python -m src.uwss.cli db-migrate --db data\uwss.sqlite
+# Chạy migration (thêm columns mới)
+python -m src.uwss.cli db-migrate --db data/uwss.sqlite
 ```
 
-### **Step 3: Data Discovery**
+### **Bước 3: Chạy pipeline cơ bản**
 ```bash
-# Discover from Crossref (25 records)
-python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 25
+# Khám phá dữ liệu (ví dụ: 10 records từ mỗi source)
+python -m src.uwss.cli discover-openalex --config config/config.yaml --db data/uwss.sqlite --max 10
+python -m src.uwss.cli discover-crossref --config config/config.yaml --db data/uwss.sqlite --max 10
+python -m src.uwss.cli discover-arxiv --config config/config.yaml --db data/uwss.sqlite --max 10
 
-# Discover from arXiv (15 records)
-python -m src.uwss.cli discover-arxiv --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 15
+# Xử lý dữ liệu
+python -m src.uwss.cli score-keywords --config config/config.yaml --db data/uwss.sqlite
+python -m src.uwss.cli normalize-metadata --db data/uwss.sqlite
+python -m src.uwss.cli dedupe-resolve --db data/uwss.sqlite
 
-# Optional: Web crawling with noise control
-python -m src.uwss.cli crawl-seeds --seeds https://www.concrete.org --db data\uwss.sqlite --max-pages 10 --config config\config.yaml --keywords-file config\keywords_concrete.txt
+# Kiểm tra chất lượng
+python -m src.uwss.cli validate --db data/uwss.sqlite
+python -m src.uwss.cli stats --db data/uwss.sqlite
+
+# Xuất dữ liệu
+python -m src.uwss.cli export --db data/uwss.sqlite --out data/export/results.jsonl
 ```
 
-### **Step 4: Data Processing**
+### **Bước 4: Tải xuống files (tùy chọn)**
 ```bash
-# Score relevance using improved token+bigram algorithm
-python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
-
-# Clean and normalize data
-python -m src.uwss.cli normalize-metadata --db data\uwss.sqlite
-
-# Resolve duplicates (deterministic deduplication)
-python -m src.uwss.cli dedupe-resolve --db data\uwss.sqlite
-
-# Optional: Remove problematic records
-python -m src.uwss.cli delete-doc --db data\uwss.sqlite --id 91  # Example: remove missing-core record
+# Tải xuống Open Access files
+python -m src.uwss.cli fetch --db data/uwss.sqlite --outdir data/files --limit 5
 ```
 
-### **Step 5: Quality Validation**
+## 📊 **KẾT QUẢ VÀ OUTPUT**
+
+### **Database (`data/uwss.sqlite`)**
+- Chứa metadata của tất cả documents
+- Có thể query bằng SQL hoặc CLI commands
+- Tự động backup và migration
+
+### **Export Files (`data/export/`)**
+- **`results.jsonl`**: Dữ liệu đầy đủ với metadata
+- **`validation.json`**: Kết quả kiểm tra chất lượng
+- **`stats.json`**: Thống kê tổng quan
+
+### **Downloaded Files (`data/files/`)**
+- PDF/HTML files được tải xuống
+- Tên file unique để tránh overwrite
+- Có thể upload lên S3 nếu cần
+
+## 🔧 **TÙY CHỈNH CHO MÁY KHÁC NHAU**
+
+### **Máy yếu (RAM < 4GB)**
 ```bash
-# Validate data quality (should show 0 issues)
-python -m src.uwss.cli validate --db data\uwss.sqlite --json-out data\export\validation.json
-
-# Generate statistics
-python -m src.uwss.cli stats --db data\uwss.sqlite --json-out data\export\stats.json
-
-# Check validation results
-Get-Content data\export\validation.json
-Get-Content data\export\stats.json
+# Giảm số records xử lý
+python -m src.uwss.cli discover-openalex --max 5
+python -m src.uwss.cli fetch --limit 2
 ```
 
-### **Step 6: Export Data**
+### **Máy mạnh (RAM > 8GB)**
 ```bash
-# Full export with provenance
-python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
-
-# Open Access only export
-python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa.jsonl --min-score 0.0 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
-
-# Clean export (higher precision, min-score 0.05)
-python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
-
-# Clean OA export
-python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_oa_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --oa-only --skip-missing-core --include-provenance
+# Tăng số records xử lý
+python -m src.uwss.cli discover-openalex --max 50
+python -m src.uwss.cli fetch --limit 20
 ```
 
-### **Step 7: Download Files**
+### **Mạng chậm**
 ```bash
-# Download Open Access files (with retries and provenance)
-python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
-
-# With throttling and jitter (for production)
-python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 3 --config config\config.yaml --throttle-sec 0.6 --jitter-sec 0.3
+# Thêm throttling
+python -m src.uwss.cli fetch --throttle-sec 1.0 --jitter-sec 0.5
 ```
 
-### **Step 8: Content Extraction (Optional)**
+## 🐳 **DOCKER (Tùy chọn)**
+
 ```bash
-# Extract text excerpts from PDF/HTML files
-python -m src.uwss.cli extract-text-excerpt --db data\uwss.sqlite --limit 100
+# Build image
+docker build -t uwss:latest .
+
+# Chạy container
+docker run --rm -v "${PWD}/data:/app/data" -v "${PWD}/config:/app/config" uwss:latest python -m src.uwss.cli stats --db data/uwss.sqlite
 ```
 
-### **Step 9: S3 Upload (Optional)**
-```bash
-# Upload files to S3 (requires AWS credentials)
-python -m src.uwss.cli s3-upload --db data\uwss.sqlite --files-dir data\files --bucket YOUR_BUCKET --prefix uwss/ --region ap-southeast-1
-```
+## 📚 **TÀI LIỆU THAM KHẢO**
 
-## 📊 **HOW TO READ OUTPUTS**
+- **`REPORT.md`**: Báo cáo chi tiết về quá trình phát triển
+- **`LOCAL_SETUP_GUIDE.md`**: Hướng dẫn setup chi tiết
+- **`deploy-cloud.md`**: Hướng dẫn deploy lên AWS
+- **`TEST_RESULTS.md`**: Kết quả test và validation
 
-### **Validation Results (`data/export/validation.json`)**
-```json
-{
-    "dup_doi": [],           // Should be empty (no duplicate DOIs)
-    "dup_title": [],         // Should be empty (no duplicate titles)
-    "missing_core": [],     // Should be empty (no missing core fields)
-    "invalid_year": [],      // Should be empty (no invalid years)
-    "missing_files": []      // Should be empty (no missing files)
-}
-```
+## ⚠️ **LƯU Ý QUAN TRỌNG**
 
-### **Statistics (`data/export/stats.json`)**
-```json
-{
-    "total": 142,                    // Total records
-    "open_access": 57,               // Open access count
-    "by_source": {                   // Distribution by source
-        "arxiv": 40,
-        "crossref": 53,
-        "scrapy": 3,
-        "web": 46
-    },
-    "by_year": {                     // Distribution by year
-        "2024": 28,
-        "2023": 17,
-        // ... more years
-    }
-}
-```
+- **Rate Limiting**: Hệ thống có throttling để tránh spam APIs
+- **Data Quality**: Không đảm bảo 100% accuracy, cần review thủ công
+- **Storage**: Files PDF có thể chiếm nhiều dung lượng
+- **Network**: Cần kết nối internet ổn định
 
-### **Export Files**
-- **`candidates.jsonl`**: All records with provenance
-- **`candidates_oa.jsonl`**: Open access records only
-- **`candidates_clean_005.jsonl`**: High-relevance records (score ≥ 0.05)
-- **`candidates_oa_clean_005.jsonl`**: High-relevance OA records
+## 🎯 **KẾT LUẬN**
 
-### **File System**
-- **`data/files/`**: Downloaded PDF/HTML files with unique names (`_id{doc.id}`)
-- **`data/uwss.sqlite`**: SQLite database with full metadata and provenance
+UWSS là một hệ thống thu thập dữ liệu học thuật tự động, được thiết kế để:
 
-## Scrapy crawling (noise control)
-Configure in `config/config.yaml`:
-```yaml
-scrapy_whitelist_domains:
-  - www.concrete.org
-  - arxiv.org
-scrapy_path_blacklist:
-  - /education
-  - /certification
-```
-Run crawl:
-```bash
-python -m src.uwss.cli crawl-seeds --seeds https://example.com \
-  --db data\uwss.sqlite --max-pages 10 --config config\config.yaml \
-  --keywords-file config\keywords_concrete.txt
-```
+- **Tiết kiệm thời gian**: Tự động hóa quá trình thu thập dữ liệu
+- **Đảm bảo chất lượng**: Lọc và làm sạch dữ liệu
+- **Linh hoạt**: Có thể tùy chỉnh cho nhiều domain khác nhau
+- **Dễ sử dụng**: CLI đơn giản, documentation đầy đủ
 
-## What “good output” looks like
-- `data/export/stats.json`: totals, OA ratio, by source/year trending up.
-- `data/export/validation.json`: `missing_core` and `dup_doi` should be empty; a few `dup_title` groups are acceptable.
-- Exports (`candidates*.jsonl`): meaningful `relevance_score`; the `clean_005` files contain fewer but more relevant items; when `--include-provenance` is used, records contain provenance fields.
-- Files in `data/files/`: unique names with `_id{doc.id}` suffix; no overwrites.
+**Hệ thống phù hợp cho nghiên cứu học thuật, data mining, và các ứng dụng cần thu thập dữ liệu từ nhiều nguồn khác nhau.**
 
-## Design choices (short)
-- Scrapy over Selenium: faster for static pages and API‑driven sites; Selenium only if pages are heavy JS.
-- `requests` (sync) for simplicity now; can move to `httpx` (async) if we scale concurrency.
-- SQLAlchemy ORM for portability and easier migrations; easy to switch to Postgres (RDS) later.
-- `pdfminer.six` + `BeautifulSoup` for simple, pure‑Python text extraction.
-- Token + bigram scoring with strong title weight to enable a reliable `--min-score` threshold.
+---
 
-## Cloud‑ready (AWS path)
-- `Dockerfile` to containerize the app.
-- `deploy-cloud.md` for ECS tasks (scheduled), S3 (files), RDS/PostgreSQL (DB), CloudWatch logging, and secrets via SSM/Secrets Manager.
-- Configure via env vars (task definition or compose): contact email, user agent, DB URL, S3 bucket, rate limits.
-
-## Branching
-- Default branch: `main-next` (improved). Legacy preserved as `main-legacy`.
-
-## Roadmap
-- Sequence module (later): extract time/value/unit series from documents and run baseline forecasting.
-
-## License / contributions
-Internal research use. Open issues/PRs welcome.
-
-Universal Web-Scraping System (Local-first)
-Create venv: .\\.venv\\Scripts\\activate\
-Install: pip install -r requirements.txt\n- Config: config/config.yaml\n
+*Universal Web-Scraping System - Tự động hóa thu thập dữ liệu học thuật*
