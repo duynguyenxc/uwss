@@ -1,24 +1,24 @@
-# 🚀 UWSS - HƯỚNG DẪN SETUP LOCAL HOÀN CHỈNH
+# 🚀 UWSS - COMPLETE LOCAL SETUP GUIDE
 
-## 📋 YÊU CẦU HỆ THỐNG
-- **Python**: 3.8+ (khuyến nghị 3.9+)
-- **Git**: Để clone repository
-- **Windows PowerShell**: Để chạy commands
-- **Internet**: Để download dependencies và crawl data
+## 📋 SYSTEM REQUIREMENTS
+- **Python**: 3.8+ (recommended 3.9+)
+- **Git**: To clone repository
+- **Windows PowerShell**: To run commands
+- **Internet**: To download dependencies and crawl data
 
-## 🔧 BƯỚC 1: CLONE REPOSITORY
+## 🔧 STEP 1: CLONE REPOSITORY
 ```bash
-# Clone repository từ GitHub
+# Clone repository from GitHub
 git clone https://github.com/duynguyenxc/uwss.git
 cd uwss
 
-# Chuyển sang nhánh production-ready
+# Switch to production-ready branch
 git checkout feat/final-production-ready
 ```
 
-## 🐍 BƯỚC 2: SETUP PYTHON ENVIRONMENT
+## 🐍 STEP 2: SETUP PYTHON ENVIRONMENT
 ```bash
-# Tạo virtual environment
+# Create virtual environment
 python -m venv .\.venv
 
 # Activate virtual environment
@@ -27,51 +27,51 @@ python -m venv .\.venv
 # Upgrade pip
 python -m pip install --upgrade pip
 
-# Install tất cả dependencies
+# Install all dependencies
 pip install -r requirements.txt
 ```
 
-## ⚙️ BƯỚC 3: KIỂM TRA CONFIGURATION
+## ⚙️ STEP 3: CHECK CONFIGURATION
 ```bash
 # Validate configuration file
 python -m src.uwss.cli config-validate --config config\config.yaml
 ```
 
-**Kết quả mong đợi**: `Configuration is valid` hoặc tương tự
+**Expected result**: `Configuration is valid` or similar
 
-## 🗄️ BƯỚC 4: KHỞI TẠO DATABASE
+## 🗄️ STEP 4: INITIALIZE DATABASE
 ```bash
-# Tạo database mới (lần đầu)
+# Create new database (first time)
 python -m src.uwss.cli db-init --db data\uwss.sqlite
 
-# Chạy migration để thêm các cột mới
+# Run migration to add new columns
 python -m src.uwss.cli db-migrate --db data\uwss.sqlite
 ```
 
-**Kết quả mong đợi**: Database được tạo tại `data/uwss.sqlite`
+**Expected result**: Database created at `data/uwss.sqlite`
 
-## 🔍 BƯỚC 5: DISCOVERY DATA
+## 🔍 STEP 5: DISCOVERY DATA
 ```bash
-# Discovery từ Crossref (25 records)
+# Discovery from Crossref (25 records)
 python -m src.uwss.cli discover-crossref --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 25
 
-# Discovery từ arXiv (15 records)  
+# Discovery from arXiv (15 records)  
 python -m src.uwss.cli discover-arxiv --config config\config.yaml --db data\uwss.sqlite --keywords-file config\keywords_concrete.txt --max 15
 ```
 
-**Kết quả mong đợi**: 
+**Expected result**: 
 - Crossref: `Discovered X new records`
 - arXiv: `Discovered Y new records`
 
-## 🧮 BƯỚC 6: SCORE RELEVANCE
+## 🧮 STEP 6: SCORE RELEVANCE
 ```bash
-# Score relevance cho tất cả documents
+# Score relevance for all documents
 python -m src.uwss.cli score-keywords --config config\config.yaml --db data\uwss.sqlite
 ```
 
-**Kết quả mong đợi**: `Scored X documents`
+**Expected result**: `Scored X documents`
 
-## 🧹 BƯỚC 7: CLEAN DATA
+## 🧹 STEP 7: CLEAN DATA
 ```bash
 # Normalize metadata
 python -m src.uwss.cli normalize-metadata --db data\uwss.sqlite
@@ -80,11 +80,11 @@ python -m src.uwss.cli normalize-metadata --db data\uwss.sqlite
 python -m src.uwss.cli dedupe-resolve --db data\uwss.sqlite
 ```
 
-**Kết quả mong đợi**: 
+**Expected result**: 
 - Normalize: `Normalized X records`
 - Dedupe: `Resolved X duplicate groups`
 
-## ✅ BƯỚC 8: VALIDATE DATA QUALITY
+## ✅ STEP 8: VALIDATE DATA QUALITY
 ```bash
 # Validate data quality
 python -m src.uwss.cli validate --db data\uwss.sqlite --json-out data\export\validation.json
@@ -93,13 +93,13 @@ python -m src.uwss.cli validate --db data\uwss.sqlite --json-out data\export\val
 python -m src.uwss.cli stats --db data\uwss.sqlite --json-out data\export\stats.json
 ```
 
-**Kết quả mong đợi**:
+**Expected result**:
 - Validation: `{"dup_doi": [], "dup_title": [], "missing_core": [], "invalid_year": [], "missing_files": []}`
-- Stats: Hiển thị tổng số records, OA count, distribution by source/year
+- Stats: Shows total records, OA count, distribution by source/year
 
-## 📤 BƯỚC 9: EXPORT DATA
+## 📤 STEP 9: EXPORT DATA
 ```bash
-# Full export với provenance
+# Full export with provenance
 python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates.jsonl --min-score 0.0 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
 
 # Open Access only export
@@ -109,37 +109,37 @@ python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates
 python -m src.uwss.cli export --db data\uwss.sqlite --out data\export\candidates_clean_005.jsonl --min-score 0.05 --year-min 1995 --sort relevance --skip-missing-core --include-provenance
 ```
 
-**Kết quả mong đợi**: 
+**Expected result**: 
 - `Exported X records to data\export\candidates.jsonl`
 - `Exported Y records to data\export\candidates_oa.jsonl`
 - `Exported Z records to data\export\candidates_clean_005.jsonl`
 
-## 📥 BƯỚC 10: DOWNLOAD FILES
+## 📥 STEP 10: DOWNLOAD FILES
 ```bash
 # Download Open Access files
 python -m src.uwss.cli fetch --db data\uwss.sqlite --outdir data\files --limit 5 --config config\config.yaml
 ```
 
-**Kết quả mong đợi**: 
+**Expected result**: 
 - `Downloaded X files`
-- Files được lưu trong `data/files/` với tên unique `_id{doc.id}`
+- Files saved in `data/files/` with unique names `_id{doc.id}`
 
-## 🔍 BƯỚC 11: KIỂM TRA KẾT QUẢ
+## 🔍 STEP 11: CHECK RESULTS
 ```bash
-# Kiểm tra validation results
+# Check validation results
 Get-Content data\export\validation.json
 
-# Kiểm tra statistics
+# Check statistics
 Get-Content data\export\stats.json
 
-# Kiểm tra export files
+# Check export files
 Get-ChildItem data\export\*.jsonl
 
-# Kiểm tra downloaded files
+# Check downloaded files
 Get-ChildItem data\files\
 ```
 
-## 📊 CÁCH ĐỌC KẾT QUẢ
+## 📊 HOW TO READ RESULTS
 
 ### **Validation Results** (`data/export/validation.json`)
 ```json
@@ -183,32 +183,33 @@ Get-ChildItem data\files\
 
 ## 🚨 TROUBLESHOOTING
 
-### **Lỗi thường gặp:**
-1. **ModuleNotFoundError**: Chạy `pip install -r requirements.txt`
-2. **Database locked**: Đóng tất cả connections, restart terminal
-3. **Network timeout**: Chạy lại command, system có retry logic
-4. **Permission denied**: Chạy PowerShell as Administrator
+### **Common errors:**
+1. **ModuleNotFoundError**: Run `pip install -r requirements.txt`
+2. **Database locked**: Close all connections, restart terminal
+3. **Network timeout**: Run command again, system has retry logic
+4. **Permission denied**: Run PowerShell as Administrator
 
-### **Kiểm tra hệ thống:**
+### **System check:**
 ```bash
-# Kiểm tra Python version
+# Check Python version
 python --version
 
-# Kiểm tra virtual environment
+# Check virtual environment
 .\.venv\Scripts\activate
 python -c "import sys; print(sys.executable)"
 
-# Kiểm tra dependencies
+# Check dependencies
 python -c "import requests, sqlalchemy, scrapy; print('All dependencies OK')"
 ```
 
-## ✅ KẾT QUẢ MONG ĐỢI
+## ✅ EXPECTED RESULTS
 
-Sau khi chạy hoàn chỉnh, bạn sẽ có:
-- ✅ **Database**: `data/uwss.sqlite` với clean data
-- ✅ **Exports**: Multiple JSONL files với provenance
-- ✅ **Files**: Downloaded PDFs/HTMLs với unique names
+After running completely, you will have:
+- ✅ **Database**: `data/uwss.sqlite` with clean data
+- ✅ **Exports**: Multiple JSONL files with provenance
+- ✅ **Files**: Downloaded PDFs/HTMLs with unique names
 - ✅ **Validation**: 100% clean data (0 issues)
 - ✅ **Stats**: Balanced distribution by source/year
 
-**Hệ thống sẵn sàng cho production deployment!**
+**System ready for production deployment!**
+

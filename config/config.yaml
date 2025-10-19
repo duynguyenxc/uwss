@@ -24,8 +24,12 @@ year_filter: 1995
 rate_limits:
   requests_per_minute: 30
   per_domain: 10
+  throttle_sec: 0.5
+  jitter_sec: 0.2
 contact_email: ddnguyen@go.olemiss.edu
 user_agent: "uwss-bot/0.1 (+ddnguyen@go.olemiss.edu)"
+timeout_sec: 30
+retry_attempts: 3
 scrapy_whitelist_domains:
   - www.concrete.org
   - www.bzhb.ru
