@@ -1,0 +1,60 @@
+steel-reinforced concrete	base	1.0	base_expansion
+durability	base	1.0	base_expansion
+steel reinforcement	base	1.0	base_expansion
+reinforced concrete	base	1.0	base_expansion
+degradation	base	1.0	base_expansion
+reinforced concrete deterioration	base	1.0	base_expansion
+reinforcing steel	base	1.0	base_expansion
+concrete reinforcement	base	1.0	base_expansion
+deterioration	base	1.0	base_expansion
+damage	base	1.0	base_expansion
+reinforcement	base	1.0	base_expansion
+corrosion	base	1.0	base_expansion
+aging	base	1.0	base_expansion
+steel bars	base	1.0	base_expansion
+rebar	base	1.0	base_expansion
+RC	base	1.0	base_expansion
+service life	base	1.0	base_expansion
+RCC	base	1.0	base_expansion
+service life prediction	academic	0.95	academic_discovery
+life cycle assessment	academic	0.95	academic_discovery
+performance evaluation	academic	0.95	academic_discovery
+structural integrity	academic	0.95	academic_discovery
+material degradation	academic	0.95	academic_discovery
+chloride attack	technical	0.9	technical_discovery
+carbonation	technical	0.9	technical_discovery
+freeze-thaw	technical	0.9	technical_discovery
+alkali-silica reaction	technical	0.9	technical_discovery
+sulfate attack	technical	0.9	technical_discovery
+creep	technical	0.9	technical_discovery
+shrinkage	technical	0.9	technical_discovery
+cracking	technical	0.9	technical_discovery
+corrosion rate	technical	0.9	technical_discovery
+corrosion initiation	technical	0.9	technical_discovery
+corrosion propagation	technical	0.9	technical_discovery
+passive film	technical	0.9	technical_discovery
+depassivation	technical	0.9	technical_discovery
+pitting corrosion	technical	0.9	technical_discovery
+concrete	synonym	0.8	synonym_discovery
+reinforced	synonym	0.8	synonym_discovery
+steel-reinforced	synonym	0.8	synonym_discovery
+armored	synonym	0.8	synonym_discovery
+cement	synonym	0.8	synonym_discovery
+mortar	synonym	0.8	synonym_discovery
+cementitious	synonym	0.8	synonym_discovery
+construction materials	related	0.7	related_discovery
+building materials	related	0.7	related_discovery
+infrastructure	related	0.7	related_discovery
+civil engineering	related	0.7	related_discovery
+structural engineering	related	0.7	related_discovery
+materials science	related	0.7	related_discovery
+maintenance	related	0.7	related_discovery
+repair	related	0.7	related_discovery
+rehabilitation	related	0.7	related_discovery
+inspection	related	0.7	related_discovery
+monitoring	related	0.7	related_discovery
+assessment	related	0.7	related_discovery
+béton armé	multilingual	0.6	multilingual_discovery
+armierter Beton	multilingual	0.6	multilingual_discovery
+concreto armado	multilingual	0.6	multilingual_discovery
+бетон армированный	multilingual	0.6	multilingual_discovery
