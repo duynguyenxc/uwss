@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://example.com/concrete-paper.pdf",
+    "content_type": "unknown",
+    "file_path": null,
+    "file_size": 0,
+    "mime_type": "unknown",
+    "checksum": "",
+    "fetch_time": 0.4729034900665283,
+    "success": false,
+    "error_message": "404 Client Error: Not Found for url: https://example.com/concrete-paper.pdf"
+  },
+  {
+    "url": "https://example.com/construction-article.html",
+    "content_type": "unknown",
+    "file_path": null,
+    "file_size": 0,
+    "mime_type": "unknown",
+    "checksum": "",
+    "fetch_time": 0.9552090167999268,
+    "success": false,
+    "error_message": "404 Client Error: Not Found for url: https://example.com/construction-article.html"
+  },
+  {
+    "url": "https://example.com/engineering-data.csv",
+    "content_type": "unknown",
+    "file_path": null,
+    "file_size": 0,
+    "mime_type": "unknown",
+    "checksum": "",
+    "fetch_time": 1.0422136783599854,
+    "success": false,
+    "error_message": "404 Client Error: Not Found for url: https://example.com/engineering-data.csv"
+  }
+]
