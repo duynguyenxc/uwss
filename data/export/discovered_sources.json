@@ -1,0 +1,648 @@
+[
+  {
+    "url": "https://example.com/research-322",
+    "domain": "example.com",
+    "source_type": "academic",
+    "title": "Research on reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment site:edu",
+    "description": "Academic research about reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment site:edu",
+    "confidence": 1.0,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "google_search",
+    "priority": 1
+  },
+  {
+    "url": "https://example.com/research-684",
+    "domain": "example.com",
+    "source_type": "academic",
+    "title": "Research on reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment site:gov",
+    "description": "Academic research about reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment site:gov",
+    "confidence": 1.0,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "google_search",
+    "priority": 1
+  },
+  {
+    "url": "https://example.com/research-845",
+    "domain": "example.com",
+    "source_type": "academic",
+    "title": "Research on reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment site:org",
+    "description": "Academic research about reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment site:org",
+    "confidence": 1.0,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "google_search",
+    "priority": 1
+  },
+  {
+    "url": "https://example.com/research-393",
+    "domain": "example.com",
+    "source_type": "academic",
+    "title": "Research on reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment academic database",
+    "description": "Academic research about reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment academic database",
+    "confidence": 1.0,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "google_search",
+    "priority": 1
+  },
+  {
+    "url": "https://example.com/research-702",
+    "domain": "example.com",
+    "source_type": "academic",
+    "title": "Research on reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment research paper",
+    "description": "Academic research about reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment research paper",
+    "confidence": 1.0,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "google_search",
+    "priority": 1
+  },
+  {
+    "url": "https://example.com/research-130",
+    "domain": "example.com",
+    "source_type": "academic",
+    "title": "Research on reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment conference proceedings",
+    "description": "Academic research about reinforced concrete corrosion experiment long term durability concrete concrete chloride diffusion test reinforcement corrosion long duration exposure reinforced concrete half-cell potential experiment conference proceedings",
+    "confidence": 1.0,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "google_search",
+    "priority": 1
+  },
+  {
+    "url": "https://scholar.google.com",
+    "domain": "scholar.google.com",
+    "source_type": "academic",
+    "title": "Academic Database: scholar.google.com",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://www.crossref.org",
+    "domain": "www.crossref.org",
+    "source_type": "academic",
+    "title": "Academic Database: www.crossref.org",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://arxiv.org",
+    "domain": "arxiv.org",
+    "source_type": "academic",
+    "title": "Academic Database: arxiv.org",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://pubmed.ncbi.nlm.nih.gov",
+    "domain": "pubmed.ncbi.nlm.nih.gov",
+    "source_type": "academic",
+    "title": "Academic Database: pubmed.ncbi.nlm.nih.gov",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://ieeexplore.ieee.org",
+    "domain": "ieeexplore.ieee.org",
+    "source_type": "academic",
+    "title": "Academic Database: ieeexplore.ieee.org",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://www.sciencedirect.com",
+    "domain": "www.sciencedirect.com",
+    "source_type": "academic",
+    "title": "Academic Database: www.sciencedirect.com",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://link.springer.com",
+    "domain": "link.springer.com",
+    "source_type": "academic",
+    "title": "Academic Database: link.springer.com",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://onlinelibrary.wiley.com",
+    "domain": "onlinelibrary.wiley.com",
+    "source_type": "academic",
+    "title": "Academic Database: onlinelibrary.wiley.com",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://www.tandfonline.com",
+    "domain": "www.tandfonline.com",
+    "source_type": "academic",
+    "title": "Academic Database: www.tandfonline.com",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://journals.sagepub.com",
+    "domain": "journals.sagepub.com",
+    "source_type": "academic",
+    "title": "Academic Database: journals.sagepub.com",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://www.researchgate.net",
+    "domain": "www.researchgate.net",
+    "source_type": "academic",
+    "title": "Academic Database: www.researchgate.net",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://www.academia.edu",
+    "domain": "www.academia.edu",
+    "source_type": "academic",
+    "title": "Academic Database: www.academia.edu",
+    "description": "Academic database for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.9,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "academic_database",
+    "priority": 1
+  },
+  {
+    "url": "https://www.fhwa.dot.gov",
+    "domain": "www.fhwa.dot.gov",
+    "source_type": "government",
+    "title": "Government Site: www.fhwa.dot.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.nist.gov",
+    "domain": "www.nist.gov",
+    "source_type": "government",
+    "title": "Government Site: www.nist.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.trb.org",
+    "domain": "www.trb.org",
+    "source_type": "government",
+    "title": "Government Site: www.trb.org",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.epa.gov",
+    "domain": "www.epa.gov",
+    "source_type": "government",
+    "title": "Government Site: www.epa.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.usda.gov",
+    "domain": "www.usda.gov",
+    "source_type": "government",
+    "title": "Government Site: www.usda.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.nsf.gov",
+    "domain": "www.nsf.gov",
+    "source_type": "government",
+    "title": "Government Site: www.nsf.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.doe.gov",
+    "domain": "www.doe.gov",
+    "source_type": "government",
+    "title": "Government Site: www.doe.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.dhs.gov",
+    "domain": "www.dhs.gov",
+    "source_type": "government",
+    "title": "Government Site: www.dhs.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.doi.gov",
+    "domain": "www.doi.gov",
+    "source_type": "government",
+    "title": "Government Site: www.doi.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.commerce.gov",
+    "domain": "www.commerce.gov",
+    "source_type": "government",
+    "title": "Government Site: www.commerce.gov",
+    "description": "Government resource for reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.8,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "government_site",
+    "priority": 2
+  },
+  {
+    "url": "https://www.reddit.com/r/civilengineering",
+    "domain": "www.reddit.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.reddit.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.reddit.com/r/construction",
+    "domain": "www.reddit.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.reddit.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.reddit.com/r/engineering",
+    "domain": "www.reddit.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.reddit.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.linkedin.com",
+    "domain": "www.linkedin.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.linkedin.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.github.com",
+    "domain": "www.github.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.github.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.stackoverflow.com",
+    "domain": "www.stackoverflow.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.stackoverflow.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.quora.com",
+    "domain": "www.quora.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.quora.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.medium.com",
+    "domain": "www.medium.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.medium.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.engineering.com",
+    "domain": "www.engineering.com",
+    "source_type": "professional",
+    "title": "Professional Forum: www.engineering.com",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  },
+  {
+    "url": "https://www.concrete.org",
+    "domain": "www.concrete.org",
+    "source_type": "professional",
+    "title": "Professional Forum: www.concrete.org",
+    "description": "Professional discussions about reinforced concrete corrosion experiment, long term durability concrete, concrete chloride diffusion test, reinforcement corrosion long duration exposure, reinforced concrete half-cell potential experiment",
+    "confidence": 0.7,
+    "keywords_matched": [
+      "reinforced concrete corrosion experiment",
+      "long term durability concrete",
+      "concrete chloride diffusion test",
+      "reinforcement corrosion long duration exposure",
+      "reinforced concrete half-cell potential experiment"
+    ],
+    "discovery_method": "professional_forum",
+    "priority": 3
+  }
+]
