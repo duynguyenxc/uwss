@@ -32,3 +32,4 @@ python -m src.uwss.cli export --db data/uwss.sqlite --out data/export/full_with_
 
 ## 7) Tác dụng
 - Identification “đầy đủ” đúng yêu cầu: luôn có `full_content` từ URL, ngay cả khi không có file PDF tải được.
+

@@ -1,0 +1,154 @@
+Index
+For Authors
+Submit A Book Proposal
+Review and Production
+Publication and Promotion
+Open Access for Book Authors
+Prepare Your Journal Submission
+Submit Your Article
+Peer Review & Journal Production
+Journal Publication & Promotion
+Open Access for Journal Authors
+Your Digital Product
+Contribute to our online resources
+Publishing Ethics
+AI Guidelines for Authors
+Repository Policy for Books
+Repository Policy for Journals
+Data Sharing Policy
+Authorship Policy
+How to promote your work
+How to select the right journal
+For Librarians
+eBook Collections
+Book Archive
+Evidence Based Acquisition
+Akademie Verlag Book Archive
+eBook Price List
+Discover our eJournals
+Database Portals
+DG Data
+Metadata & Discovery Services
+Content Access
+FAQs
+Discover our Open Access Models
+Our Subjects
+African Studies
+Architecture
+Arts
+Asian Studies
+Business & Economics
+Classical, Ancient Near Eastern & Egyptian Studies
+Cultural Studies
+Education
+German Linguistics
+History
+Islamic & Middle Eastern Studies
+Jewish Studies
+Law
+Library & Information Science, Book Studies
+Life Sciences
+Linguistics & Semiotics
+Literary Studies
+Mathematics
+Medicine
+Medieval & Early Modern Studies
+Modern Languages
+Music
+Philosophy
+Physical Sciences
+Psychology, Psychotherapy, & Coaching
+Psychosocial Care, Education, Church
+Religion, Bible, & Theology
+Social Sciences
+Technology
+Services
+Product information
+Promotional materials
+Orders and inquiries
+Rights and Permissions
+About Us
+Our History
+Our Responsibility
+Our Offices
+Our Brands
+Open Access at De Gruyter Brill
+Job Openings
+Life at De Gruyter Brill
+Press Releases
+Newsletter
+Podcasts
+Review Copies
+FAQs
+Search
+Your purchase has been completed.  Your documents are now available to view.
+Index
+MLA
+APA
+Harvard
+Chicago
+Vancouver
+MLA
+APA
+Harvard
+Chicago
+Vancouver
+Chapter PDF View
+Chapters in this book
+Chapters in this book
+Frontmatter I
+Preface V
+Contents VII
+Machine learning (ML)
+Detection of lesions in breast image using median filtering and convolutional neural networks 1
+Pushing the boundaries of probabilistic inference through message contraction optimization 27
+Facilitating cooperative missions through information sharing in heterogeneous agent teams 51
+Transferring knowledge: CNNs in Martian surface image classification 71
+Vascular system segmentation using deep learning 85
+Evolutionary CNN-based architectures with attention mechanisms for enhanced image classification 107
+Convolutional neural network (CNN)
+Multi-label concept detection in imaging entities of biomedical literature leveraging deep learning-based classification and object detection 135
+Revolutionizing supply chain dynamics: deep meta-learning and multi-task learning for enhanced predictive insights 157
+Characterization of Neuro-Symbolic AI and Graph Convolutional Network workloads 183
+Multivariant time series prediction using variants of LSTM deep neural networks 209
+Cellphone-based sUAS range estimation: a deep-learning classification and regression approach 237
+Automatic diagnosis of 12-lead ECG using DINOv2 255
+Large language model (LLM)
+Leveraging linguistic features to improve machine learning models for detecting ChatGPT usage on exams 281
+Towards AI-augmented design space exploration pipelines for UAVs 309
+Improving subword embeddings in large language models using morphological information 333
+Swarm intelligence: a new software paradigm 353
+Leveraging large language models for efficient representation learning for entity resolution 373
+TOAA: Train once, apply anywhere 395
+Index 427
+Chapters in this book
+Frontmatter I
+Preface V
+Contents VII
+Machine learning (ML)
+Detection of lesions in breast image using median filtering and convolutional neural networks 1
+Pushing the boundaries of probabilistic inference through message contraction optimization 27
+Facilitating cooperative missions through information sharing in heterogeneous agent teams 51
+Transferring knowledge: CNNs in Martian surface image classification 71
+Vascular system segmentation using deep learning 85
+Evolutionary CNN-based architectures with attention mechanisms for enhanced image classification 107
+Convolutional neural network (CNN)
+Multi-label concept detection in imaging entities of biomedical literature leveraging deep learning-based classification and object detection 135
+Revolutionizing supply chain dynamics: deep meta-learning and multi-task learning for enhanced predictive insights 157
+Characterization of Neuro-Symbolic AI and Graph Convolutional Network workloads 183
+Multivariant time series prediction using variants of LSTM deep neural networks 209
+Cellphone-based sUAS range estimation: a deep-learning classification and regression approach 237
+Automatic diagnosis of 12-lead ECG using DINOv2 255
+Large language model (LLM)
+Leveraging linguistic features to improve machine learning models for detecting ChatGPT usage on exams 281
+Towards AI-augmented design space exploration pipelines for UAVs 309
+Improving subword embeddings in large language models using morphological information 333
+Swarm intelligence: a new software paradigm 353
+Leveraging large language models for efficient representation learning for entity resolution 373
+TOAA: Train once, apply anywhere 395
+Index 427
+Our privacy policy
+Our cookie policy
+Accessibility
+General terms and conditions
+Legal Notice

@@ -68,12 +68,21 @@ def enrich_open_access_with_unpaywall(db_path: Path, contact_email: Optional[str
 			js = r.json()
 			is_oa = bool(js.get("is_oa"))
 			best = js.get("best_oa_location") or {}
-			best_url = best.get("url_for_pdf") or best.get("url")
-			if is_oa and best_url:
+			best_pdf = best.get("url_for_pdf")
+			best_html = best.get("url")
+			if is_oa and (best_pdf or best_html):
 				doc.open_access = True
 				doc.oa_status = best.get("host_type") or js.get("oa_status") or None
-				# Prefer OA URL for download
-				doc.source_url = best_url
+				# license if available
+				lic = best.get("license") or js.get("license")
+				if lic:
+					doc.license = lic
+				# fill landing/pdf fields consistently without clobbering when already set
+				if best_pdf:
+					doc.pdf_url = best_pdf
+				if best_html and not getattr(doc, "landing_url", None):
+					doc.landing_url = best_html
+				# keep source_url as-is; downloader prefers pdf_url
 				updated += 1
 				metrics["unpaywall_ok"] += 1
 		session.commit()
@@ -182,14 +191,17 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 			doc.http_status = r.status_code
 			doc.file_size = path.stat().st_size if path.exists() else None
 			doc.mime_type = content_type or None
-			doc.fetched_at = datetime.utcnow()
+			from datetime import datetime as _dt
+			doc.fetched_at = _dt.utcnow()
 			try:
 				doc.checksum_sha256 = _sha256_bytes(r.content)
 			except Exception:
 				doc.checksum_sha256 = None
 			# url hash for dedupe/logging
 			try:
-			doc.url_hash_sha1 = hashlib.sha1((url or "").encode("utf-8")).hexdigest()
+				doc.url_hash_sha1 = hashlib.sha1((url or "").encode("utf-8")).hexdigest()
+			except Exception:
+				doc.url_hash_sha1 = None
 			# Mark URL visited in registry
 			try:
 				from datetime import datetime
@@ -197,8 +209,6 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 				session.merge(vu)
 			except Exception:
 				pass
-			except Exception:
-				doc.url_hash_sha1 = None
 			count += 1
 			metrics["downloads_ok"] += 1
 		session.commit()

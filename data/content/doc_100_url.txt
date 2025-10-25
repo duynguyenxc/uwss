@@ -1,0 +1,498 @@
+Graph Neural Networks in Natural Language Processing (Chapter 10) - Deep Learning on Graphs
+Login Alert
+Browse
+Services
+Open research
+Menu links
+Browse
+Subjects
+Subjects (A-D)
+Anthropology
+Archaeology
+Area Studies
+Art
+Chemistry
+Classical Studies
+Computer Science
+Drama, Theatre, Performance Studies
+Subjects (E-K)
+Earth and Environmental Science
+Economics
+Education
+Engineering
+English Language Teaching – Resources for Teachers
+Film, Media, Mass Communication
+General Science
+Geography
+History
+Subjects (L-O)
+Language and Linguistics
+Law
+Life Sciences
+Literature
+Management
+Materials Science
+Mathematics
+Medicine
+Music
+Nutrition
+Subjects (P-Z)
+Philosophy
+Physics and Astronomy
+Politics and International Relations
+Psychiatry
+Psychology
+Religion
+Social Science Research Methods
+Sociology
+Statistics and Probability
+Open access
+All open access publishing
+Open access
+Open access journals
+Research open journals
+Journals containing open access
+Open access articles
+Open access books
+Open access Elements
+Journals
+Explore
+All journal subjects
+Search journals
+Open access
+Open access journals
+Research open journals
+Journals containing open access
+Open access articles
+Collections
+Cambridge Forum
+Cambridge Law Reports Collection
+Cambridge Prisms
+Research Directions
+Books
+Explore
+Books
+Open access books
+New books
+Flip it Open
+Collections
+Cambridge Companions
+Cambridge Editions
+Cambridge Histories
+Cambridge Library Collection
+Cambridge Shakespeare
+Cambridge Handbooks
+Collections (cont.)
+Dispute Settlement Reports Online
+Flip it Open
+Hemingway Letters
+Shakespeare Survey
+Stahl Online
+The Correspondence of Isaac Newton
+Elements
+Explore
+About Elements
+Elements series
+Open access Elements
+New Elements
+Subjects (A-E)
+Anthropology
+Archaeology
+Classical Studies
+Computer Science
+Drama, Theatre, Performance Studies
+Earth and Environmental Sciences
+Economics
+Education
+Engineering
+Subjects (F-O)
+Film, Media, Mass Communication
+History
+Language and Linguistics
+Law
+Life Sciences
+Literature
+Management
+Mathematics
+Medicine
+Music
+Subjects (P-Z)
+Philosophy
+Physics and Astronomy
+Politics and International Relations
+Psychology
+Religion
+Sociology
+Statistics and Probability
+Textbooks
+Explore
+Cambridge Higher Education
+Title list
+New titles
+Collections
+Book collections
+Cambridge Companions
+Cambridge Editions
+Cambridge Histories
+Cambridge Library Collection
+Cambridge Shakespeare
+Cambridge Handbooks
+Book collections (cont.)
+Dispute Settlement Reports Online
+Flip it Open
+Hemingway Letters
+Shakespeare Survey
+Stahl Online
+The Correspondence of Isaac Newton
+Journal collections
+Cambridge Forum
+Cambridge Law Reports Collection
+Cambridge Materials
+Cambridge Prisms
+Series
+All series
+Partners
+Partners
+Agenda Publishing
+Amsterdam University Press
+Anthem Press
+Boydell & Brewer
+Bristol University Press
+Edinburgh University Press
+Emirates Center for Strategic Studies and Research
+Facet Publishing
+Partners (cont.)
+Foundation Books
+Intersentia
+ISEAS-Yusof Ishak Institute
+Jagiellonian University Press
+Royal Economic Society
+Unisa Press
+The University of Adelaide Press
+Wits University Press
+Services
+About
+About Cambridge Core
+About
+Accessibility
+CrossMark policy
+Ethical Standards
+Environment and sustainability
+Environment and sustainability
+Reducing print
+Journals moving to online only
+Guides
+User guides
+User Guides and Videos
+Support Videos
+Training
+Help
+Cambridge Core help
+Contact us
+Technical support
+Agents
+Services for agents
+Services for agents
+Journals for agents
+Books for agents
+Price list
+Authors
+Journals
+Journals
+Journal publishing statistics
+Corresponding author
+Seeking permission to use copyrighted material
+Publishing supplementary material
+Writing an effective abstract
+Journal production - FAQs
+Journals (cont.)
+Author affiliations
+Co-reviewing policy
+Anonymising your manuscript
+Publishing open access
+Convert your article to Gold Open Access
+Publishing Open Access - webinars
+Journals (cont.)
+Preparing and submitting your paper
+Publication journey
+Publishing agreement FAQs for journal authors
+Author Information Form FAQs
+Promoting your published paper
+Measuring impact
+Journals artwork guide
+Using ORCID
+Books
+Books
+Marketing your book
+Author guides for Cambridge Elements
+Corporates
+Corporates
+Commercial reprints
+Advertising
+Sponsorship
+Book special sales
+Contact us
+Editors
+Information
+Journal development
+Peer review for editors
+Open access for editors
+Policies and guidelines
+Resources
+The editor's role
+Open research for editors
+Engagement and promotion
+Blogging
+Social media
+Librarians
+Information
+Open Access for Librarians
+Transformative agreements
+Transformative Agreements - FAQs
+Evidence based acquisition
+Cambridge libraries of the world podcast
+Purchasing models
+Journals Publishing Updates
+Products
+Cambridge frontlist
+Cambridge journals digital archive
+Hot topics
+Other digital products
+Perpetual access products
+Price list
+Developing country programme
+New content
+Tools
+Eligibility checker
+Transformative agreements
+KBART
+MARC records
+Using MARCEdit for MARC records
+Inbound OpenURL specifications
+COUNTER usage reporting
+Resources
+Catalogues and resources
+Making the most of your EBA
+Posters
+Leaflets and brochures
+Additional resources
+Find my sales contact
+Training
+Read and publish resources
+Peer review
+Peer review
+How to peer review journal articles
+How to peer review book proposals
+How to peer review Registered Reports
+Peer review FAQs
+Ethics in peer review
+Online peer review systems
+A guide to Publons
+Publishing ethics
+Journals
+Publishing ethics guidelines for journals
+Core editorial policies for journals
+Authorship and contributorship for journals
+Affiliations for journals
+Research ethics for journals
+Competing interests and funding for journals
+Journals (cont.)
+Data and supporting evidence for journals
+Misconduct for journals
+Corrections, retractions and removals for journals
+Versions and adaptations for journals
+Libel, defamation and freedom of expression
+Business ethics journals
+Books
+Publishing ethics guidelines for books
+Core editorial policies for books
+Authorship and contributorship for books
+Affiliations for books
+Research ethics for books
+Competing interests and funding for books
+Books (cont.)
+Data and supporting evidence for books
+Misconduct for books
+Corrections, retractions and removals for books
+Versions and adaptations for books
+Libel, defamation and freedom of expression
+Business ethics books
+Publishing partners
+Publishing partners
+Publishing partnerships
+Partner books
+eBook publishing partnerships
+Journal publishing partnerships
+Publishing partners (cont.)
+Journals publishing
+Customer support
+Membership Services
+Our Team
+Open research
+Open access policies
+Open access policies
+Open research
+Open access policies
+Cambridge University Press and Plan S
+Text and data mining
+Preprint policy
+Social sharing
+Journals
+Open access journals
+Gold Open Access journals
+Transformative journals
+Green Open Access policy for journals
+Transparent pricing policy for journals
+Books and Elements
+Open access books
+Gold open access books
+Green Open Access policy for books
+Open access Elements
+Open access publishing
+About open access
+Open research
+Open Access Week
+What is open access?
+Open access glossary
+Open access myths
+Hybrid Open Access FAQs
+Eligibility checker
+Open access resources
+Open access resources
+Benefits of open access
+Creative commons licences
+Funder policies and mandates
+Article type definitions
+Convert your article to Gold Open Access
+Open access video resources
+Open research initiatives
+Research transparency
+Transparency and openness
+Open Practice Badges
+OA organisations, initiatives & directories
+Registered Reports
+Annotation for Transparent Inquiry (ATI)
+Journal flips
+Open access journal flips
+OA Journal Flip FAQs
+Flip it Open
+Flip it Open
+Flip it Open FAQs
+Open access funding
+Open access funding
+Funding open access publication
+Cambridge Open Equity Initiative
+Completing a RightsLink (open access) transaction
+Cambridge Open Engage
+Cambridge Open Engage
+Cambridge Open Engage
+Partner With Us
+Branded Hubs
+Event Workspaces
+Partner Resources
+APSA Preprints
+APSA Preprints FAQs
+Home
+> Books
+> Deep Learning on Graphs
+> Graph Neural Networks in Natural Language Processing
+Book contents
+Frontmatter
+Contents
+Preface
+Acknowledgements
+1 Deep Learning on Graphs: An Introduction
+Part I Foundations
+Part II Methods
+Part III Applications
+10 Graph Neural Networks in Natural Language Processing
+11 Graph Neural Networks in Computer Vision
+12 Graph Neural Networks in Data Mining
+13 Graph Neural Networks in Biochemistry and Health Care
+Part IV Advances
+Bibliography
+Index
+10 - Graph Neural Networks in Natural Language Processing
+from Part III - Applications
+Published online by Cambridge University Press: 02 September 2021
+Chapter
+Accessibility
+Frontmatter
+Contents
+Preface
+Acknowledgements
+1 Deep Learning on Graphs: An Introduction
+Part I Foundations
+Part II Methods
+Part III Applications
+10 Graph Neural Networks in Natural Language Processing
+11 Graph Neural Networks in Computer Vision
+12 Graph Neural Networks in Data Mining
+13 Graph Neural Networks in Biochemistry and Health Care
+Part IV Advances
+Bibliography
+Index
+Summary
+Information
+Access options
+Book purchase
+Temporarily unavailable
+Accessibility standard: Unknown
+Why this information is here
+Accessibility Information
+Cited by
+Loading...
+Save book to Kindle
+To save this book to your Kindle, first ensure no-reply@cambridge.org
+              is added to your Approved Personal Document E-mail List under your Personal Document Settings
+              on the Manage Your Content and Devices page of your Amazon account. Then enter the ‘name’ part
+              of your Kindle email address below. Find out more about saving to your Kindle .
+Note you can select to save to either the @free.kindle.com or @kindle.com variations.
+              ‘@free.kindle.com’ emails are free but can only be saved to your device when it is connected to wi-fi.
+              ‘@kindle.com’ emails can be delivered even when you are not connected to wi-fi, but note that service fees apply.
+Find out more about the Kindle Personal Document Service .
+Graph Neural Networks in Natural Language Processing
+Yao Ma , Michigan State University , Jiliang Tang , Michigan State University
+Book: Deep Learning on Graphs
+Online publication: 02 September 2021
+Chapter DOI: https://doi.org/10.1017/9781108924184.015
+Save book to Dropbox
+To save content items to your account,
+              please confirm that you agree to abide by our usage policies.
+              If this is the first time you use this feature, you will be asked to authorise Cambridge Core to connect with your account. Find out more about saving content to Dropbox .
+Graph Neural Networks in Natural Language Processing
+Yao Ma , Michigan State University , Jiliang Tang , Michigan State University
+Book: Deep Learning on Graphs
+Online publication: 02 September 2021
+Chapter DOI: https://doi.org/10.1017/9781108924184.015
+Save book to Google Drive
+To save content items to your account,
+              please confirm that you agree to abide by our usage policies.
+              If this is the first time you use this feature, you will be asked to authorise Cambridge Core to connect with your account. Find out more about saving content to Google Drive .
+Graph Neural Networks in Natural Language Processing
+Yao Ma , Michigan State University , Jiliang Tang , Michigan State University
+Book: Deep Learning on Graphs
+Online publication: 02 September 2021
+Chapter DOI: https://doi.org/10.1017/9781108924184.015
+Our Site
+Accessibility
+Contact & Help
+Legal Notices
+Cookie Settings
+Quick Links
+Cambridge Core
+Cambridge Open Engage
+Cambridge Aspire website
+Our Products
+Journals
+Books
+Elements
+Textbooks
+Courseware
+Join us online
+Please choose a valid location.
+Rights & Permissions
+Copyright
+Privacy Notice
+Terms of Use
+Cookies Policy

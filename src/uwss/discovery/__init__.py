@@ -74,7 +74,7 @@ def build_crossref_params(keywords: Iterable[str], year_filter: Optional[int], r
 	}
 	if year_filter:
 		params["filter"] = f"from-pub-date:{year_filter}-01-01"
-    return params
+	return params
 
 
 def fetch_crossref_page(params: Dict[str, str], contact_email: Optional[str], cache_ttl_sec: Optional[int] = None) -> Dict:
@@ -91,8 +91,8 @@ def fetch_crossref_page(params: Dict[str, str], contact_email: Optional[str], ca
 
 
 def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None, cache_ttl_sec: Optional[int] = None, start_offset: int = 0) -> Iterator[Dict]:
-    rows = 20
-    offset = int(start_offset or 0)
+	rows = 20
+	offset = int(start_offset or 0)
 	count = 0
 	while count < max_records:
 		params = build_crossref_params(keywords, year_filter, rows, offset, contact_email)
@@ -112,13 +112,13 @@ def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = 
 ARXIV_API = "http://export.arxiv.org/api/query"
 
 
-def iter_arxiv_results(keywords: Iterable[str], max_records: int = 50) -> Iterator[Dict]:
+def iter_arxiv_results(keywords: Iterable[str], max_records: int = 50, start: int = 0) -> Iterator[Dict]:
 	# arXiv query uses + for spaces; limit simple OR across keywords
 	query_terms = [kw.replace(" ", "+") for kw in keywords]
 	query = "+OR+".join(f"all:{q}" for q in query_terms)
 	params = {
 		"search_query": query,
-		"start": 0,
+		"start": int(start or 0),
 		"max_results": max_records,
 	}
 	url = ARXIV_API + "?" + "&".join(f"{k}={v}" for k, v in params.items())
@@ -177,23 +177,130 @@ def fetch_s2_page(params: Dict[str, str], api_key: Optional[str] = None, cache_t
 
 
 def iter_semanticscholar_results(keywords: Iterable[str], max_records: int = 100, api_key: Optional[str] = None, cache_ttl_sec: Optional[int] = None, start_offset: int = 0) -> Iterator[Dict]:
-	# Simple query by joining keywords; callers can run multiple times for different topics
-	query = " ".join(list(keywords))
-	limit = min(25, max_records)
-	offset = int(start_offset or 0)
+	"""Iterate Semantic Scholar results keyword-by-keyword in small batches to avoid 400 errors.
+	- Uses limit<=10 per call; resumes from start_offset only for the first keyword.
+	"""
+	kw_list = [k for k in keywords if str(k).strip()]
+	count = 0
+	first = True
+	for kw in kw_list:
+		if count >= max_records:
+			break
+		query = kw.strip()
+		limit = min(10, max_records - count)
+		offset = int(start_offset or 0) if first else 0
+		first = False
+		while count < max_records:
+			params = build_s2_params(query, limit=limit, offset=offset)
+			try:
+				data = fetch_s2_page(params, api_key=api_key, cache_ttl_sec=cache_ttl_sec)
+			except Exception:
+				# skip problematic keyword/page (e.g., 400 Bad Request)
+				break
+			items = data.get("data") or []
+			if not items:
+				break
+			for item in items:
+				yield item
+				count += 1
+				if count >= max_records:
+					break
+			offset += limit
+
+
+# ------------------------ PMC (NCBI E-utilities) ------------------------
+EUTILS_ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+EUTILS_ESUMMARY = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
+
+
+def _pmc_esearch(term: str, retstart: int, retmax: int, cache_ttl_sec: Optional[int] = None) -> Dict:
+	params = {
+		"db": "pmc",
+		"term": term,
+		"retmode": "json",
+		"retstart": str(retstart),
+		"retmax": str(retmax),
+	}
+	if cache_ttl_sec:
+		from ..utils.cache import fetch_json_with_cache
+		return fetch_json_with_cache(EUTILS_ESEARCH, params=params, ttl_sec=cache_ttl_sec)
+	resp = requests.get(EUTILS_ESEARCH, params=params, timeout=30)
+	resp.raise_for_status()
+	return resp.json()
+
+
+def _pmc_esummary(id_list: str, cache_ttl_sec: Optional[int] = None) -> Dict:
+	params = {
+		"db": "pmc",
+		"id": id_list,
+		"retmode": "json",
+	}
+	if cache_ttl_sec:
+		from ..utils.cache import fetch_json_with_cache
+		return fetch_json_with_cache(EUTILS_ESUMMARY, params=params, ttl_sec=cache_ttl_sec)
+	resp = requests.get(EUTILS_ESUMMARY, params=params, timeout=30)
+	resp.raise_for_status()
+	return resp.json()
+
+
+def iter_pmc_results(keywords: Iterable[str], max_records: int = 100, cache_ttl_sec: Optional[int] = None, start_retstart: int = 0) -> Iterator[Dict]:
+	query = " OR ".join([f"{kw}" for kw in keywords])
+	retmax = min(20, max_records)
+	retstart = int(start_retstart or 0)
 	count = 0
 	while count < max_records:
-		params = build_s2_params(query, limit=limit, offset=offset)
-		data = fetch_s2_page(params, api_key=api_key, cache_ttl_sec=cache_ttl_sec)
-		items = data.get("data") or []
-		if not items:
+		data = _pmc_esearch(query, retstart=retstart, retmax=retmax, cache_ttl_sec=cache_ttl_sec)
+		ids = (data.get("esearchresult") or {}).get("idlist") or []
+		if not ids:
 			break
-		for item in items:
+		sumjs = _pmc_esummary(",".join(ids), cache_ttl_sec=cache_ttl_sec)
+		docsum = (sumjs.get("result") or {})
+		for id_ in ids:
+			item = docsum.get(str(id_)) or {}
+			if not item or str(id_) == "uids":
+				continue
 			yield item
 			count += 1
 			if count >= max_records:
 				break
-		offset += limit
+		retstart += retmax
+
+
+# ------------------------ DOAJ ------------------------
+DOAJ_SEARCH = "https://doaj.org/api/v2/search/articles/"
+
+
+def fetch_doaj_page(query: str, page: int, page_size: int, cache_ttl_sec: Optional[int] = None) -> Dict:
+	params = {
+		"page": str(page),
+		"pageSize": str(page_size),
+	}
+	url = DOAJ_SEARCH + requests.utils.quote(query, safe="")
+	if cache_ttl_sec:
+		from ..utils.cache import fetch_json_with_cache
+		return fetch_json_with_cache(url, params=params, ttl_sec=cache_ttl_sec)
+	resp = requests.get(url, params=params, timeout=30)
+	resp.raise_for_status()
+	return resp.json()
+
+
+def iter_doaj_results(keywords: Iterable[str], max_records: int = 100, cache_ttl_sec: Optional[int] = None, start_page: int = 1) -> Iterator[Dict]:
+	# DOAJ Lucene-like query: join keywords with OR
+	q = " OR ".join([f'"{k}"' for k in keywords])
+	page_size = min(20, max_records)
+	page = int(start_page or 1)
+	count = 0
+	while count < max_records:
+		js = fetch_doaj_page(q, page=page, page_size=page_size, cache_ttl_sec=cache_ttl_sec)
+		results = js.get("results") or []
+		if not results:
+			break
+		for item in results:
+			yield item
+			count += 1
+			if count >= max_records:
+				break
+		page += 1
 
 # ------------------------ Europe PMC ------------------------
 EUPMC_BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"

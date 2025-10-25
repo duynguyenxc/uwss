@@ -1,0 +1,147 @@
+Chapter 8. Machine Learning, Deep Learning—Artificial Neural Networks
+For Authors
+Submit A Book Proposal
+Review and Production
+Publication and Promotion
+Open Access for Book Authors
+Prepare Your Journal Submission
+Submit Your Article
+Peer Review & Journal Production
+Journal Publication & Promotion
+Open Access for Journal Authors
+Your Digital Product
+Contribute to our online resources
+Publishing Ethics
+AI Guidelines for Authors
+Repository Policy for Books
+Repository Policy for Journals
+Data Sharing Policy
+Authorship Policy
+How to promote your work
+How to select the right journal
+For Librarians
+eBook Collections
+Book Archive
+Evidence Based Acquisition
+Akademie Verlag Book Archive
+eBook Price List
+Discover our eJournals
+Database Portals
+DG Data
+Metadata & Discovery Services
+Content Access
+FAQs
+Discover our Open Access Models
+Our Subjects
+African Studies
+Architecture
+Arts
+Asian Studies
+Business & Economics
+Classical, Ancient Near Eastern & Egyptian Studies
+Cultural Studies
+Education
+German Linguistics
+History
+Islamic & Middle Eastern Studies
+Jewish Studies
+Law
+Library & Information Science, Book Studies
+Life Sciences
+Linguistics & Semiotics
+Literary Studies
+Mathematics
+Medicine
+Medieval & Early Modern Studies
+Modern Languages
+Music
+Philosophy
+Physical Sciences
+Psychology, Psychotherapy, & Coaching
+Psychosocial Care, Education, Church
+Religion, Bible, & Theology
+Social Sciences
+Technology
+Services
+Product information
+Promotional materials
+Orders and inquiries
+Rights and Permissions
+About Us
+Our History
+Our Responsibility
+Our Offices
+Our Brands
+Open Access at De Gruyter Brill
+Job Openings
+Life at De Gruyter Brill
+Press Releases
+Newsletter
+Podcasts
+Review Copies
+FAQs
+Search
+Your purchase has been completed.  Your documents are now available to view.
+Chapter 8. Machine Learning, Deep Learning—Artificial Neural Networks
+Peter Ghavami
+MLA
+APA
+Harvard
+Chicago
+Vancouver
+MLA
+APA
+Harvard
+Chicago
+Vancouver
+Chapter PDF View
+Chapters in this book
+Chapters in this book
+Frontmatter I
+Acknowledgments VII
+About the Author IX
+Contents XI
+Introduction 1
+Part I: Big Data Analytics
+Chapter 1. Data Analytics Overview 13
+Chapter 2. Basic Data Analysis 33
+Chapter 3. Data Analytics Process 49
+Part II: Advanced Analytics Methods
+Chapter 4. Natural Language Processing 65
+Chapter 5. Quantitative Analysis—Prediction and Prognostics 85
+Chapter 6. Advanced Analytics and Predictive Modeling 97
+Chapter 7. Ensemble of Models: Data Analytics Prediction Framework 149
+Chapter 8. Machine Learning, Deep Learning—Artificial Neural Networks 155
+Chapter 9. Model Accuracy and Optimization 185
+Part III: Case Study—Prediction and Advanced Analytics in Practice
+Chapter 10. Ensemble of Models—Medical Prediction Case Study: Data Types, Data Requirements and Data Pre-Processing 197
+Appendices 211
+References 223
+Index 229
+Chapters in this book
+Frontmatter I
+Acknowledgments VII
+About the Author IX
+Contents XI
+Introduction 1
+Part I: Big Data Analytics
+Chapter 1. Data Analytics Overview 13
+Chapter 2. Basic Data Analysis 33
+Chapter 3. Data Analytics Process 49
+Part II: Advanced Analytics Methods
+Chapter 4. Natural Language Processing 65
+Chapter 5. Quantitative Analysis—Prediction and Prognostics 85
+Chapter 6. Advanced Analytics and Predictive Modeling 97
+Chapter 7. Ensemble of Models: Data Analytics Prediction Framework 149
+Chapter 8. Machine Learning, Deep Learning—Artificial Neural Networks 155
+Chapter 9. Model Accuracy and Optimization 185
+Part III: Case Study—Prediction and Advanced Analytics in Practice
+Chapter 10. Ensemble of Models—Medical Prediction Case Study: Data Types, Data Requirements and Data Pre-Processing 197
+Appendices 211
+References 223
+Index 229
+Our privacy policy
+Our cookie policy
+Accessibility
+General terms and conditions
+Legal Notice
