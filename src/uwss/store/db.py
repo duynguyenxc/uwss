@@ -85,5 +85,18 @@ def migrate_db(db_path: Path) -> None:
 			"""
 		))
 		conn.commit()
+		# Ensure ingestion_state table exists
+		conn.execute(sql_text(
+			"""
+			CREATE TABLE IF NOT EXISTS ingestion_state (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				source VARCHAR(50) NOT NULL,
+				checkpoint_key VARCHAR(100) NULL,
+				checkpoint_value VARCHAR(1000) NULL,
+				updated_at DATETIME NULL
+			)
+			"""
+		))
+		conn.commit()
 
 

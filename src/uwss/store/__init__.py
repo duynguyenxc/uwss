@@ -1,3 +1,3 @@
-from .models import Base, Document
+from .models import Base, Document, IngestionState
 from .db import create_sqlite_engine, init_db, migrate_db
 

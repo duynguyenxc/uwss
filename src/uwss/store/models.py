@@ -52,6 +52,15 @@ class Document(Base):
 	url_hash_sha1: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
 
 
+class IngestionState(Base):
+	__tablename__ = "ingestion_state"
+
+	id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+	source: Mapped[str] = mapped_column(String(50))
+	checkpoint_key: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+	checkpoint_value: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+	updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
 
 class VisitedUrl(Base):
 	__tablename__ = "visited_urls"

@@ -117,6 +117,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_crossref.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_crossref.add_argument("--max", type=int, default=100)
 	p_crossref.add_argument("--cache-ttl-sec", type=int, default=None)
+	p_crossref.add_argument("--resume", action="store_true", help="Resume from saved offset")
 
 	def _cmd_crossref(args: argparse.Namespace) -> int:
 		from .discovery import iter_crossref_results
@@ -133,9 +134,18 @@ def build_parser() -> argparse.ArgumentParser:
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
 		Base.metadata.create_all(engine)
 		session = SessionLocal()
+		from .store import IngestionState
+		start_offset = 0
+		if args.resume:
+			st = session.query(IngestionState).filter(IngestionState.source == "crossref", IngestionState.checkpoint_key == "offset").first()
+			if st and st.checkpoint_value:
+				try:
+					start_offset = int(st.checkpoint_value)
+				except Exception:
+					start_offset = 0
 		inserted = 0
 		try:
-			for item in iter_crossref_results(keywords, year_filter, max_records=args.max, contact_email=contact_email, cache_ttl_sec=args.cache_ttl_sec):
+			for item in iter_crossref_results(keywords, year_filter, max_records=args.max, contact_email=contact_email, cache_ttl_sec=args.cache_ttl_sec, start_offset=start_offset):
 				doi = (item.get("DOI") or "")
 				title_list = item.get("title") or []
 				title = title_list[0] if title_list else None
@@ -186,6 +196,15 @@ def build_parser() -> argparse.ArgumentParser:
 					session.add(doc)
 				inserted += 1
 			session.commit()
+			# save new offset state
+			if args.resume:
+				new_off = start_offset + inserted
+				st = session.query(IngestionState).filter(IngestionState.source == "crossref", IngestionState.checkpoint_key == "offset").first() or IngestionState(source="crossref", checkpoint_key="offset")
+				from datetime import datetime
+				st.checkpoint_value = str(new_off)
+				st.updated_at = datetime.utcnow()
+				session.merge(st)
+				session.commit()
 			console.print(f"[green]Inserted {inserted} Crossref records into {args.db}[/green]")
 			return 0
 		except Exception as e:
@@ -268,6 +287,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_eupmc.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_eupmc.add_argument("--max", type=int, default=100)
 	p_eupmc.add_argument("--cache-ttl-sec", type=int, default=None)
+	p_eupmc.add_argument("--resume", action="store_true")
 
 	def _cmd_eupmc(args: argparse.Namespace) -> int:
 		from .discovery import iter_eupmc_results
@@ -282,9 +302,15 @@ def build_parser() -> argparse.ArgumentParser:
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
 		Base.metadata.create_all(engine)
 		session = SessionLocal()
+		from .store import IngestionState
+		start_cursor = "*"
+		if args.resume:
+			st = session.query(IngestionState).filter(IngestionState.source == "europe_pmc", IngestionState.checkpoint_key == "cursor").first()
+			if st and st.checkpoint_value:
+				start_cursor = st.checkpoint_value
 		inserted = 0
 		try:
-			for item in iter_eupmc_results(keywords, year_filter, max_records=args.max, cache_ttl_sec=args.cache_ttl_sec):
+			for item in iter_eupmc_results(keywords, year_filter, max_records=args.max, cache_ttl_sec=args.cache_ttl_sec, start_cursor=start_cursor):
 				title = item.get("title")
 				doi = item.get("doi") or item.get("DOI") or ""
 				landing_url = None
@@ -334,6 +360,14 @@ def build_parser() -> argparse.ArgumentParser:
 				session.add(doc)
 				inserted += 1
 			session.commit()
+			# save new cursor (naive: not available here; leave as provided)
+			if args.resume and inserted > 0:
+				st = session.query(IngestionState).filter(IngestionState.source == "europe_pmc", IngestionState.checkpoint_key == "cursor").first() or IngestionState(source="europe_pmc", checkpoint_key="cursor")
+				from datetime import datetime
+				st.checkpoint_value = start_cursor
+				st.updated_at = datetime.utcnow()
+				session.merge(st)
+				session.commit()
 			console.print(f"[green]Inserted {inserted} Europe PMC records into {args.db}[/green]")
 			return 0
 		finally:
@@ -349,6 +383,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_s2.add_argument("--max", type=int, default=100)
 	p_s2.add_argument("--api-key", default=None, help="Semantic Scholar API key (optional)")
 	p_s2.add_argument("--cache-ttl-sec", type=int, default=None)
+	p_s2.add_argument("--resume", action="store_true")
 
 	def _cmd_s2(args: argparse.Namespace) -> int:
 		from .discovery import iter_semanticscholar_results
@@ -362,9 +397,18 @@ def build_parser() -> argparse.ArgumentParser:
 		engine, SessionLocal = create_sqlite_engine(Path(args.db))
 		Base.metadata.create_all(engine)
 		session = SessionLocal()
+		from .store import IngestionState
+		start_offset = 0
+		if args.resume:
+			st = session.query(IngestionState).filter(IngestionState.source == "semantic_scholar", IngestionState.checkpoint_key == "offset").first()
+			if st and st.checkpoint_value:
+				try:
+					start_offset = int(st.checkpoint_value)
+				except Exception:
+					start_offset = 0
 		inserted = 0
 		try:
-			for item in iter_semanticscholar_results(keywords, max_records=args.max, api_key=args.api_key, cache_ttl_sec=args.cache_ttl_sec):
+			for item in iter_semanticscholar_results(keywords, max_records=args.max, api_key=args.api_key, cache_ttl_sec=args.cache_ttl_sec, start_offset=start_offset):
 				title = item.get("title")
 				year = item.get("year")
 				venue = item.get("venue") or (item.get("journal") or {}).get("name")
@@ -401,6 +445,14 @@ def build_parser() -> argparse.ArgumentParser:
 				session.add(doc)
 				inserted += 1
 			session.commit()
+			if args.resume:
+				new_off = start_offset + inserted
+				st = session.query(IngestionState).filter(IngestionState.source == "semantic_scholar", IngestionState.checkpoint_key == "offset").first() or IngestionState(source="semantic_scholar", checkpoint_key="offset")
+				from datetime import datetime
+				st.checkpoint_value = str(new_off)
+				st.updated_at = datetime.utcnow()
+				session.merge(st)
+				session.commit()
 			console.print(f"[green]Inserted {inserted} Semantic Scholar records into {args.db}[/green]")
 			return 0
 		finally:

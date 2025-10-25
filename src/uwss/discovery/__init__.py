@@ -74,7 +74,7 @@ def build_crossref_params(keywords: Iterable[str], year_filter: Optional[int], r
 	}
 	if year_filter:
 		params["filter"] = f"from-pub-date:{year_filter}-01-01"
-	return params
+    return params
 
 
 def fetch_crossref_page(params: Dict[str, str], contact_email: Optional[str], cache_ttl_sec: Optional[int] = None) -> Dict:
@@ -90,9 +90,9 @@ def fetch_crossref_page(params: Dict[str, str], contact_email: Optional[str], ca
 	return resp.json()
 
 
-def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None, cache_ttl_sec: Optional[int] = None) -> Iterator[Dict]:
-	rows = 20
-	offset = 0
+def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None, cache_ttl_sec: Optional[int] = None, start_offset: int = 0) -> Iterator[Dict]:
+    rows = 20
+    offset = int(start_offset or 0)
 	count = 0
 	while count < max_records:
 		params = build_crossref_params(keywords, year_filter, rows, offset, contact_email)
@@ -176,11 +176,11 @@ def fetch_s2_page(params: Dict[str, str], api_key: Optional[str] = None, cache_t
 	return resp.json()
 
 
-def iter_semanticscholar_results(keywords: Iterable[str], max_records: int = 100, api_key: Optional[str] = None, cache_ttl_sec: Optional[int] = None) -> Iterator[Dict]:
+def iter_semanticscholar_results(keywords: Iterable[str], max_records: int = 100, api_key: Optional[str] = None, cache_ttl_sec: Optional[int] = None, start_offset: int = 0) -> Iterator[Dict]:
 	# Simple query by joining keywords; callers can run multiple times for different topics
 	query = " ".join(list(keywords))
 	limit = min(25, max_records)
-	offset = 0
+	offset = int(start_offset or 0)
 	count = 0
 	while count < max_records:
 		params = build_s2_params(query, limit=limit, offset=offset)
@@ -222,9 +222,9 @@ def fetch_eupmc_page(params: Dict[str, str], cursor_mark: Optional[str] = None, 
 	return resp.json()
 
 
-def iter_eupmc_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, cache_ttl_sec: Optional[int] = None) -> Iterator[Dict]:
+def iter_eupmc_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, cache_ttl_sec: Optional[int] = None, start_cursor: Optional[str] = "*") -> Iterator[Dict]:
 	params = build_eupmc_query(list(keywords), year_filter, page_size=min(25, max_records))
-	cursor = "*"
+	cursor = start_cursor or "*"
 	count = 0
 	while count < max_records:
 		data = fetch_eupmc_page(params, cursor_mark=cursor, cache_ttl_sec=cache_ttl_sec)
