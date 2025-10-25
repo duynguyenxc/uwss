@@ -23,10 +23,13 @@ class Document(Base):
 	authors: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string of author names
 	venue: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 	year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+	pub_date: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 	file_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 	open_access: Mapped[bool] = mapped_column(Boolean, default=False)
 	abstract: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 	local_path: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+	content_path: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+	content_chars: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 	keywords_found: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON list of matched keywords
 	relevance_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 	status: Mapped[str] = mapped_column(String(40), default="not_fetched")

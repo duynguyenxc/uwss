@@ -43,6 +43,9 @@ def migrate_db(db_path: Path) -> None:
 		if "file_size" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN file_size INTEGER"))
 			conn.commit()
+		if "pub_date" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN pub_date VARCHAR(20)"))
+			conn.commit()
 		if "source" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN source VARCHAR(50)"))
 			conn.commit()
@@ -63,6 +66,12 @@ def migrate_db(db_path: Path) -> None:
 			conn.commit()
 		if "url_hash_sha1" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN url_hash_sha1 VARCHAR(40)"))
+			conn.commit()
+		if "content_path" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN content_path VARCHAR(1000)"))
+			conn.commit()
+		if "content_chars" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN content_chars INTEGER"))
 			conn.commit()
 		# Ensure visited_urls registry table exists
 		conn.execute(sql_text(

@@ -67,3 +67,42 @@ def extract_text_excerpt(db_path: Path, limit: int = 20) -> int:
 		return count
 	finally:
 		s.close()
+
+
+def extract_full_text(db_path: Path, content_dir: Path, limit: int = 50) -> int:
+	"""Extract full text from local_path (PDF/HTML) or fallback to abstract/title.
+	Write full content to content_dir as .txt and store content_path + content_chars.
+	"""
+	content_dir.mkdir(parents=True, exist_ok=True)
+	engine, SessionLocal = create_sqlite_engine(db_path)
+	s = SessionLocal()
+	try:
+		count = 0
+		for (doc,) in s.execute(select(Document)):
+			if count >= limit:
+				break
+			if getattr(doc, "content_path", None):
+				continue
+			text = ""
+			lp = getattr(doc, "local_path", None)
+			if lp and Path(lp).exists():
+				p = Path(lp)
+				if p.suffix.lower() == ".pdf":
+					text = extract_from_pdf(p) or ""
+				elif p.suffix.lower() in (".html", ".htm"):
+					text = extract_from_html(p) or ""
+			if not text:
+				text = (doc.abstract or "") + "\n" + (doc.title or "")
+			if not text.strip():
+				continue
+			name_base = f"doc_{doc.id}"
+			outp = content_dir / f"{name_base}.txt"
+			outp.write_text(text, encoding="utf-8")
+			doc.content_path = str(outp)
+			doc.content_chars = len(text)
+			s.add(doc)
+			count += 1
+		s.commit()
+		return count
+	finally:
+		s.close()

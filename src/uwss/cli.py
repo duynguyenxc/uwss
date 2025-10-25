@@ -438,6 +438,20 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_xt.set_defaults(func=_cmd_xt)
 
+	# extract-full-text
+	p_xf = sub.add_parser("extract-full-text", help="Extract full text from local files or metadata into data/content")
+	p_xf.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_xf.add_argument("--content-dir", default=str(Path("data") / "content"))
+	p_xf.add_argument("--limit", type=int, default=50)
+
+	def _cmd_xf(args: argparse.Namespace) -> int:
+		from .extract import extract_full_text
+		n = extract_full_text(Path(args.db), Path(args.content_dir), limit=args.limit)
+		console.print(f"[green]Extracted full text for {n} records[/green]")
+		return 0
+
+	p_xf.set_defaults(func=_cmd_xf)
+
 	# s3-upload (optional: upload downloaded files to S3)
 	p_s3 = sub.add_parser("s3-upload", help="Upload files from data/files to S3 bucket/prefix")
 	p_s3.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
@@ -519,9 +533,13 @@ def build_parser() -> argparse.ArgumentParser:
 					"authors": d.authors,
 					"venue": d.venue,
 					"year": d.year,
+					"date": getattr(d, "pub_date", None),
 					"relevance_score": d.relevance_score,
 					"status": d.status,
 					"local_path": d.local_path,
+					"pdf_path": d.local_path,
+					"content_path": getattr(d, "content_path", None),
+					"content_chars": getattr(d, "content_chars", None),
 					"open_access": d.open_access,
 					"license": d.license,
 					"file_size": d.file_size,
