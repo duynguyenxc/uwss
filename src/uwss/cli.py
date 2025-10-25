@@ -2,6 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 from typing import Any, Dict
+import os
 
 import yaml
 from rich.console import Console
@@ -104,59 +105,8 @@ def build_parser() -> argparse.ArgumentParser:
 	p_openalex.add_argument("--max", type=int, default=100, help="Max records to fetch")
 
 	def _cmd_openalex(args: argparse.Namespace) -> int:
-		from .discovery import iter_openalex_results
-		from .store import create_sqlite_engine, Document, Base
-		import json
-		
-		data = load_config(Path(args.config))
-		validate_config(data)
-		keywords = data["domain_keywords"]
-		if args.keywords_file:
-			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
-		contact_email = data.get("contact_email")
-		user_agent = data.get("user_agent")
-		year_filter = data.get("year_filter")
-		engine, SessionLocal = create_sqlite_engine(Path(args.db))
-		Base.metadata.create_all(engine)
-		session = SessionLocal()
-		inserted = 0
-		try:
-			for item in iter_openalex_results(keywords, year_filter, max_records=args.max, contact_email=contact_email, user_agent=user_agent):
-				doi = (item.get("doi") or "")
-				title = item.get("title")
-				abstract = (item.get("abstract") or "")
-				source = item.get("primary_location", {})
-				source_url = source.get("source", {}).get("host_organization_url") or source.get("landing_page_url") or ""
-				open_access = bool(item.get("open_access", {}).get("is_oa"))
-				year = None
-				pub_date = item.get("publication_date")
-				if pub_date and len(pub_date) >= 4:
-					year = int(pub_date[:4])
-				authors = [a.get("author", {}).get("display_name") for a in item.get("authorships", []) if a.get("author")]
-				doc = Document(
-					source_url=source_url or item.get("id", ""),
-					doi=doi,
-					title=title,
-					authors=json.dumps([a for a in authors if a]),
-					venue=(item.get("host_venue", {}) or {}).get("display_name"),
-					year=year,
-					open_access=open_access,
-					abstract=abstract,
-					status="metadata_only",
-						source="openalex",
-						topic=", ".join(keywords[:3]) if keywords else None,
-				)
-				session.add(doc)
-				inserted += 1
-			session.commit()
-			console.print(f"[green]Inserted {inserted} OpenAlex records into {args.db}[/green]")
-			return 0
-		except Exception as e:
-			session.rollback()
-			console.print(f"[red]Discovery failed:[/red] {e}")
-			return 1
-		finally:
-			session.close()
+		console.print("[yellow]OpenAlex disabled by configuration due to API issues. Skipping.[/yellow]")
+		return 0
 
 	p_openalex.set_defaults(func=_cmd_openalex)
 
@@ -166,6 +116,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_crossref.add_argument("--keywords-file", default=None)
 	p_crossref.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_crossref.add_argument("--max", type=int, default=100)
+	p_crossref.add_argument("--cache-ttl-sec", type=int, default=None)
 
 	def _cmd_crossref(args: argparse.Namespace) -> int:
 		from .discovery import iter_crossref_results
@@ -184,7 +135,7 @@ def build_parser() -> argparse.ArgumentParser:
 		session = SessionLocal()
 		inserted = 0
 		try:
-			for item in iter_crossref_results(keywords, year_filter, max_records=args.max, contact_email=contact_email):
+			for item in iter_crossref_results(keywords, year_filter, max_records=args.max, contact_email=contact_email, cache_ttl_sec=args.cache_ttl_sec):
 				doi = (item.get("DOI") or "")
 				title_list = item.get("title") or []
 				title = title_list[0] if title_list else None
@@ -193,6 +144,11 @@ def build_parser() -> argparse.ArgumentParser:
 				for l in item.get("link", []) or []:
 					if l.get("URL"):
 						link = l["URL"]
+						break
+				pdf_url = None
+				for l in item.get("link", []) or []:
+					if (l.get("content-type") == "application/pdf") and l.get("URL"):
+						pdf_url = l["URL"]
 						break
 				authors = []
 				for a in item.get("author", []) or []:
@@ -214,19 +170,21 @@ def build_parser() -> argparse.ArgumentParser:
 				else:
 					doc = Document(
 						source_url=link or item.get("URL", ""),
+						landing_url=link or item.get("URL", ""),
+						pdf_url=pdf_url or None,
 						doi=doi,
 						title=title,
 						authors=json.dumps(authors),
 						venue=(item.get("container-title") or [None])[0],
 						year=year,
-						open_access=False,
+						open_access=bool(pdf_url),
 						abstract=abstract,
 						status="metadata_only",
 						source="crossref",
 						topic=", ".join(keywords[:3]) if keywords else None,
 					)
 					session.add(doc)
-					inserted += 1
+				inserted += 1
 			session.commit()
 			console.print(f"[green]Inserted {inserted} Crossref records into {args.db}[/green]")
 			return 0
@@ -275,7 +233,9 @@ def build_parser() -> argparse.ArgumentParser:
 				if exists:
 					continue
 				doc = Document(
-					source_url=pdf_link or item.get("id", ""),
+					source_url=item.get("id", ""),
+					landing_url=item.get("id", ""),
+					pdf_url=pdf_link or None,
 					doi=None,
 					title=title,
 					authors=json.dumps(authors),
@@ -300,6 +260,153 @@ def build_parser() -> argparse.ArgumentParser:
 			session.close()
 
 	p_arxiv.set_defaults(func=_cmd_arxiv)
+
+	# discover-eupmc
+	p_eupmc = sub.add_parser("discover-eupmc", help="Fetch candidate metadata from Europe PMC")
+	p_eupmc.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_eupmc.add_argument("--keywords-file", default=None)
+	p_eupmc.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_eupmc.add_argument("--max", type=int, default=100)
+	p_eupmc.add_argument("--cache-ttl-sec", type=int, default=None)
+
+	def _cmd_eupmc(args: argparse.Namespace) -> int:
+		from .discovery import iter_eupmc_results
+		from .store import create_sqlite_engine, Document, Base
+		import json
+		data = load_config(Path(args.config))
+		validate_config(data)
+		keywords = data["domain_keywords"]
+		if args.keywords_file:
+			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
+		year_filter = data.get("year_filter")
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		Base.metadata.create_all(engine)
+		session = SessionLocal()
+		inserted = 0
+		try:
+			for item in iter_eupmc_results(keywords, year_filter, max_records=args.max, cache_ttl_sec=args.cache_ttl_sec):
+				title = item.get("title")
+				doi = item.get("doi") or item.get("DOI") or ""
+				landing_url = None
+				pdf_url = None
+				ft = item.get("fullTextUrlList") or {}
+				urls = ft.get("fullTextUrl") or []
+				if urls:
+					landing_url = urls[0].get("url")
+					for u in urls:
+						if str(u.get("documentStyle")).lower() == "pdf" and u.get("url"):
+							pdf_url = u["url"]
+							break
+				year = None
+				try:
+					year = int(item.get("pubYear")) if item.get("pubYear") else None
+				except Exception:
+					year = None
+				authors = []
+				alist = (item.get("authorList") or {}).get("author") or []
+				for a in alist:
+					name = " ".join([a.get("firstName") or "", a.get("lastName") or ""]).strip()
+					if name:
+						authors.append(name)
+				# dedupe by DOI or title
+				exists = None
+				if doi:
+					exists = session.query(Document).filter(Document.doi == doi).first()
+				if not exists and title:
+					exists = session.query(Document).filter(Document.title == title).first()
+				if exists:
+					continue
+				doc = Document(
+					source_url=landing_url or item.get("source") or "",
+					landing_url=landing_url or None,
+					pdf_url=pdf_url or None,
+					doi=doi,
+					title=title,
+					authors=json.dumps(authors),
+					venue=item.get("journalTitle") or item.get("bookOrReportDetails") or None,
+					year=year,
+					open_access=True if pdf_url else False,
+					abstract=item.get("abstractText") or "",
+					status="metadata_only",
+					source="europe_pmc",
+					topic=", ".join(keywords[:3]) if keywords else None,
+				)
+				session.add(doc)
+				inserted += 1
+			session.commit()
+			console.print(f"[green]Inserted {inserted} Europe PMC records into {args.db}[/green]")
+			return 0
+		finally:
+			session.close()
+
+	p_eupmc.set_defaults(func=_cmd_eupmc)
+
+	# discover-semanticscholar
+	p_s2 = sub.add_parser("discover-semanticscholar", help="Fetch candidate metadata from Semantic Scholar")
+	p_s2.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_s2.add_argument("--keywords-file", default=None)
+	p_s2.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_s2.add_argument("--max", type=int, default=100)
+	p_s2.add_argument("--api-key", default=None, help="Semantic Scholar API key (optional)")
+	p_s2.add_argument("--cache-ttl-sec", type=int, default=None)
+
+	def _cmd_s2(args: argparse.Namespace) -> int:
+		from .discovery import iter_semanticscholar_results
+		from .store import create_sqlite_engine, Document, Base
+		import json
+		data = load_config(Path(args.config))
+		validate_config(data)
+		keywords = data["domain_keywords"]
+		if args.keywords_file:
+			keywords = [k.strip() for k in Path(args.keywords_file).read_text(encoding="utf-8").splitlines() if k.strip()]
+		engine, SessionLocal = create_sqlite_engine(Path(args.db))
+		Base.metadata.create_all(engine)
+		session = SessionLocal()
+		inserted = 0
+		try:
+			for item in iter_semanticscholar_results(keywords, max_records=args.max, api_key=args.api_key, cache_ttl_sec=args.cache_ttl_sec):
+				title = item.get("title")
+				year = item.get("year")
+				venue = item.get("venue") or (item.get("journal") or {}).get("name")
+				abstract = item.get("abstract") or ""
+				url = item.get("url")
+				pdf_url = ((item.get("openAccessPdf") or {}) or {}).get("url")
+				# externalIds can contain DOI
+				ext_ids = item.get("externalIds") or {}
+				doi = ext_ids.get("DOI") or ""
+				authors = [a.get("name") for a in item.get("authors", []) if a.get("name")]
+				# dedupe by DOI or title
+				exists = None
+				if doi:
+					exists = session.query(Document).filter(Document.doi == doi).first()
+				if not exists and title:
+					exists = session.query(Document).filter(Document.title == title).first()
+				if exists:
+					continue
+				doc = Document(
+					source_url=url or "",
+					landing_url=url or None,
+					pdf_url=pdf_url or None,
+					doi=doi,
+					title=title,
+					authors=json.dumps(authors),
+					venue=venue,
+					year=int(year) if isinstance(year, int) else (int(year) if str(year).isdigit() else None),
+					open_access=True if pdf_url else False,
+					abstract=abstract,
+					status="metadata_only",
+					source="semantic_scholar",
+					topic=", ".join(keywords[:3]) if keywords else None,
+				)
+				session.add(doc)
+				inserted += 1
+			session.commit()
+			console.print(f"[green]Inserted {inserted} Semantic Scholar records into {args.db}[/green]")
+			return 0
+		finally:
+			session.close()
+
+	p_s2.set_defaults(func=_cmd_s2)
 
 	# score-keywords
 	p_score = sub.add_parser("score-keywords", help="Compute keyword relevance scores for documents in DB")
@@ -383,6 +490,8 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--skip-missing-core", action="store_true")
 	# include-new-fields
 	p_export.add_argument("--include-provenance", action="store_true")
+	# include-full-text excerpt
+	p_export.add_argument("--include-full-text", action="store_true")
 
 	def _cmd_export(args: argparse.Namespace) -> int:
 		from sqlalchemy import select
@@ -403,6 +512,8 @@ def build_parser() -> argparse.ArgumentParser:
 				row = {
 					"id": d.id,
 					"source_url": d.source_url,
+					"landing_url": getattr(d, "landing_url", None),
+					"pdf_url": getattr(d, "pdf_url", None),
 					"doi": d.doi,
 					"title": d.title,
 					"authors": d.authors,
@@ -418,6 +529,8 @@ def build_parser() -> argparse.ArgumentParser:
 					"oa_status": d.oa_status,
 					"topic": d.topic,
 				}
+				if args.include_full_text:
+					row["text_excerpt"] = getattr(d, "text_excerpt", None)
 				if args.include_provenance:
 					row["checksum_sha256"] = getattr(d, "checksum_sha256", None)
 					row["mime_type"] = getattr(d, "mime_type", None)

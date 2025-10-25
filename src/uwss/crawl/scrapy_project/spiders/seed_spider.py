@@ -3,6 +3,7 @@ from urllib.parse import urljoin, urlparse
 import re
 from sqlalchemy import select
 from src.uwss.store import create_sqlite_engine, Document, Base
+from src.uwss.store.models import VisitedUrl
 
 
 class SeedSpider(scrapy.Spider):
@@ -44,6 +45,10 @@ class SeedSpider(scrapy.Spider):
 		session = self.SessionLocal()
 		try:
 			url = response.url
+			# Skip if visited before
+			vu = session.get(VisitedUrl, url)
+			if vu:
+				return
 			exists = session.query(Document).filter(Document.source_url == url).first()
 			title = response.css("title::text").get() or response.css("h1::text").get()
 			abstract = None
@@ -61,9 +66,15 @@ class SeedSpider(scrapy.Spider):
 			if not is_relevant:
 				return
 			if not exists:
-				doc = Document(source_url=url, status="metadata_only", source="scrapy", title=title, abstract=abstract)
+				doc = Document(source_url=url, landing_url=url, status="metadata_only", source="scrapy", title=title, abstract=abstract)
 				session.add(doc)
 				session.commit()
+			# Mark visited
+			from datetime import datetime
+			now = datetime.utcnow()
+			vu = VisitedUrl(url=url, first_seen=now, last_seen=now, status="ok")
+			session.merge(vu)
+			session.commit()
 		finally:
 			session.close()
 

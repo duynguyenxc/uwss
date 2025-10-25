@@ -33,6 +33,13 @@ def migrate_db(db_path: Path) -> None:
 	with engine.connect() as conn:
 		cols = conn.execute(sql_text("PRAGMA table_info(documents)")).fetchall()
 		names = {c[1] for c in cols}
+		# New identification fields
+		if "landing_url" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN landing_url VARCHAR(1000)"))
+			conn.commit()
+		if "pdf_url" not in names:
+			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN pdf_url VARCHAR(1000)"))
+			conn.commit()
 		if "file_size" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN file_size INTEGER"))
 			conn.commit()
@@ -57,5 +64,17 @@ def migrate_db(db_path: Path) -> None:
 		if "url_hash_sha1" not in names:
 			conn.execute(sql_text("ALTER TABLE documents ADD COLUMN url_hash_sha1 VARCHAR(40)"))
 			conn.commit()
+		# Ensure visited_urls registry table exists
+		conn.execute(sql_text(
+			"""
+			CREATE TABLE IF NOT EXISTS visited_urls (
+				url VARCHAR(1000) PRIMARY KEY,
+				first_seen DATETIME NULL,
+				last_seen DATETIME NULL,
+				status VARCHAR(50) NULL
+			)
+			"""
+		))
+		conn.commit()
 
 

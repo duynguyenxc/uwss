@@ -16,6 +16,8 @@ class Document(Base):
 
 	id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 	source_url: Mapped[str] = mapped_column(String(1000))
+	landing_url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+	pdf_url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
 	doi: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 	title: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
 	authors: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string of author names
@@ -45,5 +47,15 @@ class Document(Base):
 	checksum_sha256: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
 	# url hash for dedupe
 	url_hash_sha1: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+
+
+
+class VisitedUrl(Base):
+	__tablename__ = "visited_urls"
+
+	url: Mapped[str] = mapped_column(String(1000), primary_key=True)
+	first_seen: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+	last_seen: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+	status: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 
 

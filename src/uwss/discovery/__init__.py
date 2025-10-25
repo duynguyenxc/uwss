@@ -77,23 +77,26 @@ def build_crossref_params(keywords: Iterable[str], year_filter: Optional[int], r
 	return params
 
 
-def fetch_crossref_page(params: Dict[str, str], contact_email: Optional[str]) -> Dict:
+def fetch_crossref_page(params: Dict[str, str], contact_email: Optional[str], cache_ttl_sec: Optional[int] = None) -> Dict:
 	headers = {
 		"User-Agent": f"uwss/0.1 ({contact_email})" if contact_email else "uwss/0.1",
 		"Accept": "application/json",
 	}
+	if cache_ttl_sec:
+		from ..utils.cache import fetch_json_with_cache
+		return fetch_json_with_cache(CROSSREF_BASE, params=params, headers=headers, ttl_sec=cache_ttl_sec)
 	resp = requests.get(CROSSREF_BASE, params=params, headers=headers, timeout=30)
 	resp.raise_for_status()
 	return resp.json()
 
 
-def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None) -> Iterator[Dict]:
+def iter_crossref_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, contact_email: Optional[str] = None, cache_ttl_sec: Optional[int] = None) -> Iterator[Dict]:
 	rows = 20
 	offset = 0
 	count = 0
 	while count < max_records:
 		params = build_crossref_params(keywords, year_filter, rows, offset, contact_email)
-		data = fetch_crossref_page(params, contact_email)
+		data = fetch_crossref_page(params, contact_email, cache_ttl_sec=cache_ttl_sec)
 		items = (data.get("message") or {}).get("items", [])
 		if not items:
 			break
@@ -136,3 +139,103 @@ def iter_arxiv_results(keywords: Iterable[str], max_records: int = 50) -> Iterat
 			"pdf_link": pdf_link,
 		}
 
+
+# ------------------------ Semantic Scholar ------------------------
+S2_BASE = "https://api.semanticscholar.org/graph/v1/paper/search"
+
+
+def build_s2_params(query: str, limit: int, offset: int) -> Dict[str, str]:
+	fields = [
+		"title",
+		"year",
+		"abstract",
+		"venue",
+		"journal",
+		"externalIds",
+		"openAccessPdf",
+		"url",
+		"authors.name",
+	]
+	return {
+		"query": query,
+		"limit": str(limit),
+		"offset": str(offset),
+		"fields": ",".join(fields),
+	}
+
+
+def fetch_s2_page(params: Dict[str, str], api_key: Optional[str] = None, cache_ttl_sec: Optional[int] = None) -> Dict:
+	headers = {}
+	if api_key:
+		headers["x-api-key"] = api_key
+	if cache_ttl_sec:
+		from ..utils.cache import fetch_json_with_cache
+		return fetch_json_with_cache(S2_BASE, params=params, headers=headers, ttl_sec=cache_ttl_sec)
+	resp = requests.get(S2_BASE, params=params, headers=headers, timeout=30)
+	resp.raise_for_status()
+	return resp.json()
+
+
+def iter_semanticscholar_results(keywords: Iterable[str], max_records: int = 100, api_key: Optional[str] = None, cache_ttl_sec: Optional[int] = None) -> Iterator[Dict]:
+	# Simple query by joining keywords; callers can run multiple times for different topics
+	query = " ".join(list(keywords))
+	limit = min(25, max_records)
+	offset = 0
+	count = 0
+	while count < max_records:
+		params = build_s2_params(query, limit=limit, offset=offset)
+		data = fetch_s2_page(params, api_key=api_key, cache_ttl_sec=cache_ttl_sec)
+		items = data.get("data") or []
+		if not items:
+			break
+		for item in items:
+			yield item
+			count += 1
+			if count >= max_records:
+				break
+		offset += limit
+
+# ------------------------ Europe PMC ------------------------
+EUPMC_BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+
+
+def build_eupmc_query(keywords: Iterable[str], year_filter: Optional[int] = None, page_size: int = 25) -> Dict[str, str]:
+	query = " OR ".join([f'ALL:"{kw}"' for kw in keywords])
+	if year_filter:
+		query = f"({query}) AND PUB_YEAR:[{year_filter} TO 3000]"
+	return {
+		"query": query,
+		"format": "json",
+		"pageSize": str(page_size),
+	}
+
+
+def fetch_eupmc_page(params: Dict[str, str], cursor_mark: Optional[str] = None, cache_ttl_sec: Optional[int] = None) -> Dict:
+	p = dict(params)
+	if cursor_mark:
+		p["cursorMark"] = cursor_mark
+	if cache_ttl_sec:
+		from ..utils.cache import fetch_json_with_cache
+		return fetch_json_with_cache(EUPMC_BASE, params=p, ttl_sec=cache_ttl_sec)
+	resp = requests.get(EUPMC_BASE, params=p, timeout=30)
+	resp.raise_for_status()
+	return resp.json()
+
+
+def iter_eupmc_results(keywords: Iterable[str], year_filter: Optional[int] = None, max_records: int = 100, cache_ttl_sec: Optional[int] = None) -> Iterator[Dict]:
+	params = build_eupmc_query(list(keywords), year_filter, page_size=min(25, max_records))
+	cursor = "*"
+	count = 0
+	while count < max_records:
+		data = fetch_eupmc_page(params, cursor_mark=cursor, cache_ttl_sec=cache_ttl_sec)
+		hits = (data.get("resultList") or {}).get("result", [])
+		if not hits:
+			break
+		for item in hits:
+			yield item
+			count += 1
+			if count >= max_records:
+				break
+		cursor = data.get("nextCursorMark")
+		if not cursor:
+			break

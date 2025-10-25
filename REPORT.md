@@ -66,7 +66,31 @@
 
 ## 🚀 **DETAILED DEVELOPMENT PROCESS**
 
-### **PHASE 1: FOUNDATION SETUP**
+### **PHASE 1: FOUNDATION + INCREMENTAL CRAWLING SETUP**
+
+#### Mục tiêu
+- Kiến trúc chuyên nghiệp, dễ bảo trì; nhận diện dữ liệu đầy đủ; nền tảng để chạy lặp không trùng lặp.
+- Tắt nguồn OpenAlex (API lỗi); bổ sung nguồn học thuật tin cậy khác.
+
+#### Đã làm gì
+- Thêm nhận diện mở rộng trong `Document`: `landing_url`, `pdf_url`.
+- Thêm bảng `visited_urls` để đánh dấu URL đã xử lý (skip ở các lần chạy sau).
+- Nâng cấp discovery: Crossref, arXiv thêm dedupe trước khi insert; thêm mới Europe PMC và Semantic Scholar (no-op OpenAlex).
+- Downloader ưu tiên `pdf_url`; lưu provenance (checksum, mime, fetched_at, size, url_hash).
+- Export xuất `landing_url`, `pdf_url`, tuỳ chọn `--include-full-text`.
+
+#### Cách vận hành (ví dụ)
+- `discover-crossref`/`discover-eupmc`/`discover-semanticscholar` chèn bản ghi đã chuẩn hoá, tránh trùng DOI/title.
+- `crawl-seeds` lưu candidate từ seed pages, và ghi `visited_urls` để bỏ qua URL đã xử lý.
+- `fetch` tải theo `pdf_url` nếu có; ghi provenance và đánh dấu URL đã tải.
+
+#### Kỹ thuật/chức năng chính
+- SQLAlchemy ORM, migrate idempotent.
+- Scrapy spider hạn chế domain, path blacklist; keyword filter cơ bản.
+- Dedupe DOI/title, URL registry.
+
+#### Tác dụng
+- Chạy lặp không lặp lại URL và bản ghi; dữ liệu có nhận diện rõ ràng, dễ truy vết; sẵn sàng mở rộng nguồn.
 
 #### **Objectives**
 - Build standard Python project structure
@@ -110,6 +134,26 @@ Project Structure:
 ---
 
 ### **PHASE 2: DATA SOURCE INTEGRATION**
+#### Mục tiêu (bổ sung/hiện tại)
+- Thêm cache HTTP để giảm chi phí API và tăng tốc, hỗ trợ chạy lặp hiệu quả.
+
+#### Đã làm gì
+- Thêm `src/uwss/utils/cache.py`: cache đĩa theo (url+params) với TTL.
+- Tích hợp cache vào Crossref, Europe PMC, Semantic Scholar (tuỳ chọn TTL qua CLI `--cache-ttl-sec`).
+
+#### Cách vận hành (ví dụ)
+```bash
+python -m src.uwss.cli discover-crossref --config config/config.yaml --db data/uwss.sqlite --max 100 --cache-ttl-sec 86400
+python -m src.uwss.cli discover-eupmc --config config/config.yaml --db data/uwss.sqlite --max 100 --cache-ttl-sec 86400
+python -m src.uwss.cli discover-semanticscholar --config config/config.yaml --db data/uwss.sqlite --max 100 --cache-ttl-sec 86400
+```
+
+#### Kỹ thuật/chức năng chính
+- Băm SHA1 khoá cache từ url+params; lưu `.json`/`.txt` trong `data/cache/`.
+- TTL kiểm soát độ tươi; fallback HTTP trực tiếp khi cache hết hạn.
+
+#### Tác dụng
+- Chạy lặp nhanh, giảm quota API, ổn định kết quả theo phiên.
 
 #### **Objectives**
 - Integrate 4 data sources: Crossref, arXiv, OpenAlex, Scrapy

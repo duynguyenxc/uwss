@@ -16,6 +16,7 @@ from datetime import datetime
 import mimetypes
 
 from ..store import create_sqlite_engine, Document
+from ..store.models import VisitedUrl
 
 
 def safe_filename(s: str) -> str:
@@ -125,7 +126,8 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 		for (doc,) in q:
 			if count >= limit:
 				break
-			url = doc.source_url
+			# Prefer pdf_url if available; else landing/source_url
+			url = getattr(doc, "pdf_url", None) or getattr(doc, "source_url", None)
 			if not url:
 				continue
 			headers = {"User-Agent": f"uwss/0.1 ({contact_email})" if contact_email else "uwss/0.1"}
@@ -187,7 +189,14 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 				doc.checksum_sha256 = None
 			# url hash for dedupe/logging
 			try:
-				doc.url_hash_sha1 = hashlib.sha1((url or "").encode("utf-8")).hexdigest()
+			doc.url_hash_sha1 = hashlib.sha1((url or "").encode("utf-8")).hexdigest()
+			# Mark URL visited in registry
+			try:
+				from datetime import datetime
+				vu = VisitedUrl(url=url, last_seen=datetime.utcnow(), status=str(r.status_code))
+				session.merge(vu)
+			except Exception:
+				pass
 			except Exception:
 				doc.url_hash_sha1 = None
 			count += 1

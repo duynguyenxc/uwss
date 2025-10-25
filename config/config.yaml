@@ -10,9 +10,10 @@
   - reinforced concrete crack width over time
   - reinforced concrete mass loss rebar corrosion
 domain_sources:
-  - https://api.openalex.org
   - https://www.crossref.org
   - https://arxiv.org
+  - https://europepmc.org
+  - https://api.semanticscholar.org
   - https://scholar.google.com
   - https://ascelibrary.org
   - https://www.concrete.org
