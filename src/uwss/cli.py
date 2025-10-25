@@ -504,6 +504,24 @@ def build_parser() -> argparse.ArgumentParser:
 
 	p_xf.set_defaults(func=_cmd_xf)
 
+	# scrape-full-content (from landing/source URL)
+	p_sfc = sub.add_parser("scrape-full-content", help="Fetch landing/source URL and extract full content to data/content")
+	p_sfc.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
+	p_sfc.add_argument("--content-dir", default=str(Path("data") / "content"))
+	p_sfc.add_argument("--limit", type=int, default=50)
+	p_sfc.add_argument("--config", default=str(Path("config") / "config.yaml"))
+	p_sfc.add_argument("--overwrite", action="store_true")
+
+	def _cmd_sfc(args: argparse.Namespace) -> int:
+		from .extract import scrape_full_content
+		data = load_config(Path(args.config))
+		contact_email = data.get("contact_email")
+		n = scrape_full_content(Path(args.db), Path(args.content_dir), limit=args.limit, contact_email=contact_email, overwrite=args.overwrite)
+		console.print(f"[green]Scraped full content for {n} URLs[/green]")
+		return 0
+
+	p_sfc.set_defaults(func=_cmd_sfc)
+
 	# s3-upload (optional: upload downloaded files to S3)
 	p_s3 = sub.add_parser("s3-upload", help="Upload files from data/files to S3 bucket/prefix")
 	p_s3.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
@@ -556,6 +574,8 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--skip-missing-core", action="store_true")
 	# include-new-fields
 	p_export.add_argument("--include-provenance", action="store_true")
+	# embed content text (use with caution for large outputs)
+	p_export.add_argument("--embed-content", action="store_true")
 	# include-full-text excerpt
 	p_export.add_argument("--include-full-text", action="store_true")
 
@@ -601,6 +621,12 @@ def build_parser() -> argparse.ArgumentParser:
 				}
 				if args.include_full_text:
 					row["text_excerpt"] = getattr(d, "text_excerpt", None)
+				if args.embed_content:
+					try:
+						cp = getattr(d, "content_path", None)
+						row["full_content"] = Path(cp).read_text(encoding="utf-8") if cp else None
+					except Exception:
+						row["full_content"] = None
 				if args.include_provenance:
 					row["checksum_sha256"] = getattr(d, "checksum_sha256", None)
 					row["mime_type"] = getattr(d, "mime_type", None)
