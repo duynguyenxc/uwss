@@ -1,4 +1,4 @@
-American Concrete Institute > Publications > Get Article
+Corrosion Performance of Steel-Plated Reinforced Concrete Beams After Long-Term Natural Exposure
 Select Regional Portal ​ ▼ ACI Global Home Middle East Region Portal Western Europe Region Portal
 ACI Global Home Middle East Region Portal Western Europe Region Portal
 Subscribe to Email ​ ▼ Please select a country... Afghanistan Åland Islands Albania Algeria American Samoa Andorra Angola Anguilla Antarctica Antigua And Barbuda Argentina Armenia Aruba Australia Austria Azerbaijan Bahamas Bahrain Bangladesh Barbados Belarus Belgium Belize Benin Bermuda Bhutan Bolivia Bonaire, Sint Eustatius and Saba Bosnia and Herzegovina Botswana Bouvet Island Brazil British Antarctic Territory British Indian Ocean Territory British Overseas Territory Brunei Darussalam Bulgaria Burkina Faso Burundi Cabo Verde Cambodia Cameroon Canada Cayman Islands Central African Republic Chad Chile China Christmas Island Cocos (Keeling) Islands Colombia Comoros Congo Congo, Democratic Republic of the Cook Islands Costa Rica Côte d'Ivoire Croatia Cuba Curaçao Cyprus Czech Republic Denmark Djibouti Dominica Dominican Republic Ecuador Egypt El Salvador Equatorial Guinea Eritrea Estonia Ethiopia Falkland Islands Faroe Islands Fiji Finland France French Guiana French Polynesia French Southern Territories Gabon Gambia Georgia Germany Ghana Gibraltar Greece Greenland Grenada Guadeloupe Guam Guatemala Guernsey Guinea Guinea-Bissau Guyana Haiti Heard Island and McDonald Islands Holy See (Vatican City) Honduras Hong Kong Hungary Iceland India Indonesia Iran, Islamic Republic of Iraq Ireland Isle of Man Israel Italy Jamaica Japan Jersey Jordan Kazakhstan Kenya Kiribati Korea (the Republic of) Korea, Democratic People's Republic of Kosovo, Republic of Kuwait Kyrgyzstan Lao People's Democratic Republic Latvia Lebanon Lesotho Liberia Libya Liechtenstein Lithuania Luxembourg Macau Macedonia, Former Yugoslav Republic of Madagascar Malawi Malaysia Maldives Mali Malta Marshall Islands Martinique Mauritania Mauritius Mayotte Mexico Micronesia, Federated States of Moldova, Republic of Monaco Mongolia Montenegro Montserrat Morocco Mozambique Myanmar Namibia Nauru Nepal Netherlands New Caledonia New Zealand Nicaragua Niger Nigeria Niue Norfolk Island Northern Mariana Islands Norway Oman Pakistan Palau Palestine, State of Panama Papua New Guinea Paraguay Peru Philippines Pitcairn Poland Portugal Puerto Rico Qatar Réunion Romania Russian Federation Rwanda Saint Barthélemy Saint Kitts And Nevis Saint Lucia Saint Martin (French part) Saint Pierre and Miquelon Samoa San Marino Sao Tome And Principe Saudi Arabia Senegal Serbia Seychelles Sierra Leone Singapore Sint Maarten (Dutch part) Slovakia Slovenia Solomon Islands Somalia South Africa South Georgia South Sudan Spain Sri Lanka St Vincent And Grenadines St. Helena Ascensian and Tristan da Aunh Sudan Suriname Svalbard and Jan Mayen Swaziland Sweden Switzerland Syrian Arab Republic Taiwan Tajikistan Tanzania, United Republic of Thailand Timor-Leste Togo Tokelau Tonga Trinidad And Tobago Tunisia Turkey Turkmenistan Turks And Caicos Islands Tuvalu Uganda Ukraine United Arab Emirates United Kingdom United States United States Minor Outlying Islands Uruguay Uzbekistan Vanuatu Venezuela Viet Nam Virgin Islands (British) Virgin Islands (U.S.) Wallis And Futuna Islands Western Sahara Yemen Zambia Zimbabwe
@@ -124,7 +124,22 @@ ACI Bylaws
 Board of Direction
 Job Openings at ACI
 Contact Us
-Home > Publications > Get Article
+Home > Publications > International Concrete Abstracts Portal
+International Concrete Abstracts Portal
+The International Concrete Abstracts Portal is an ACI led collaboration with leading technical organizations from within the international concrete industry and offers the most comprehensive collection of published concrete abstracts.
+Title: Corrosion Performance of Steel-Plated Reinforced Concrete Beams After Long-Term Natural Exposure
+Author(s): Brian Hobbs,S, R. Narayan Swamy, and Mark Roberts
+Publication: Symposium Paper
+Volume: 165
+Issue:
+Appears on pages(s): 101-126
+Keywords: adhesives; beams (supports); corrosion; deterioration; exposure; durability; epoxy resins; plates (structural members); reinforced concrete; reinforcing steels; renovating; Materials Research Brian Hobbs, R. Narayan Swamy, and Mark Roberts
+DOI: 10.14359/1393
+Date: 12/1/1996
+Abstract: Extensive research has established that the provision of epoxy bonded steel plates as external reinforcement can be effective and efficient in enhancing the serviceability and ultimate strength of reinforced concrete  beams. This plate bonding technique has many technical and practical advantages and provides an economic means of strengthening and rehabilitating damaged and/or deteriorated structures. There is, however, only limited data on the long term performance and durability of such strengthened beams. This paper presents the results of a comprehensive test program in which 21 steel plated reinforced concrete beams, both unloaded and loaded, were exposed to natural weathering for up to 12 years, without any maintenance, in an industrially polluted area. The main variables  investigated include adhesive thickness, number of plates, and number and location of plate laps. The beams were examined in great detail after the exposure period; the extent of corrosion damage and the mechanisms of deterioration due to this exposure are critically evaluated and presented.
+ALSO AVAILABLE IN:
+New and Archived Symposium Volumes - Digital Subscription
+Edit Module Settings to define Page Content Reviewer
 About ACI
 ●
 Career Center

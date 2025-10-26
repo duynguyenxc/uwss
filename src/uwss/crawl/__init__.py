@@ -17,6 +17,7 @@ import mimetypes
 
 from ..store import create_sqlite_engine, Document
 from ..store.models import VisitedUrl
+from bs4 import BeautifulSoup
 
 
 def safe_filename(s: str) -> str:
@@ -215,6 +216,135 @@ def download_open_links(db_path: Path, out_dir: Path, limit: int = 10, contact_e
 		# Structured metrics log
 		print(json.dumps({"uwss_event": "download_summary", "downloaded": count, **metrics}))
 		return count
+	finally:
+		session.close()
+
+
+def _build_session() -> requests.Session:
+	s = requests.Session()
+	retry = Retry(
+		total=3,
+		backoff_factor=0.5,
+		status_forcelist=(429, 500, 502, 503, 504),
+		respect_retry_after_header=True,
+		allowed_methods=("GET",),
+	)
+	adapter = HTTPAdapter(max_retries=retry)
+	s.mount("http://", adapter)
+	s.mount("https://", adapter)
+	return s
+
+
+def resolve_publisher_links(db_path: Path, limit: int = 50, contact_email: Optional[str] = None) -> int:
+	"""Try to resolve publisher landing/PDF links starting from landing_url/source_url.
+	- For Semantic Scholar pages: follow "View via Publisher" link
+	- On publisher pages: detect PDF via common selectors and meta tags
+	- If only DOI is present or pdf_url is a doi.org URL: follow redirects to get final landing/PDF
+	"""
+	engine, SessionLocal = create_sqlite_engine(db_path)
+	session = SessionLocal()
+	client = _build_session()
+	updated = 0
+	updated_pdf = 0
+	try:
+		q = session.execute(select(Document))
+		for (doc,) in q:
+			if updated >= limit:
+				break
+			landing = getattr(doc, "landing_url", None) or getattr(doc, "source_url", None)
+			if not landing:
+				continue
+			# Skip if already has a clear PDF (non-doi)
+			pdf_url = getattr(doc, "pdf_url", None)
+			if pdf_url and ("doi.org" not in pdf_url.lower()):
+				continue
+			headers = {"User-Agent": f"uwss/0.1 ({contact_email})" if contact_email else "uwss/0.1"}
+			try:
+				r = client.get(landing, headers=headers, timeout=20, allow_redirects=True)
+			except Exception:
+				continue
+			if r.status_code != 200:
+				continue
+			final_url = r.url or landing
+			html = r.text or ""
+			# If this is a Semantic Scholar page, find View via Publisher link
+			if "semanticscholar.org" in final_url.lower():
+				try:
+					soup = BeautifulSoup(html, "html.parser")
+					publisher_a = None
+					for a in soup.find_all("a"):
+						text = (a.get_text(" ", strip=True) or "").lower()
+						if "view via publisher" in text or "publisher" in text:
+							publisher_a = a
+							break
+					if publisher_a and publisher_a.get("href"):
+						landing2 = publisher_a.get("href")
+						# follow publisher page
+						try:
+							r2 = client.get(landing2, headers=headers, timeout=20, allow_redirects=True)
+						except Exception:
+							landing2 = None
+						if r2 is not None and r2.status_code == 200:
+							final_url = r2.url or landing2 or final_url
+							html = r2.text or html
+							doc.landing_url = final_url
+							session.add(doc)
+							updated += 1
+				except Exception:
+					pass
+
+			# On final page, try to detect PDF
+			try:
+				soup = BeautifulSoup(html, "html.parser")
+				# meta citation_pdf_url
+				meta_pdf = soup.find("meta", attrs={"name": "citation_pdf_url"})
+				if meta_pdf and meta_pdf.get("content"):
+					doc.pdf_url = meta_pdf["content"].strip()
+					session.add(doc)
+					updated_pdf += 1
+					continue
+				# link rel alternate type application/pdf
+				lnk = soup.find("link", attrs={"rel": "alternate", "type": "application/pdf"})
+				if lnk and lnk.get("href"):
+					doc.pdf_url = lnk["href"].strip()
+					session.add(doc)
+					updated_pdf += 1
+					continue
+				# any anchor to *.pdf
+				for a in soup.find_all("a"):
+					href = (a.get("href") or "").strip()
+					txt = (a.get_text(" ", strip=True) or "").lower()
+					if href.lower().endswith(".pdf") or "pdf" in txt:
+						doc.pdf_url = href
+						session.add(doc)
+						updated_pdf += 1
+						break
+			except Exception:
+				pass
+
+			# If pdf_url is a DOI link or still empty but DOI present, try doi.org redirect
+			doi = getattr(doc, "doi", None)
+			if (not getattr(doc, "pdf_url", None)) and doi:
+				try:
+					rh = client.get(f"https://doi.org/{doi}", headers=headers, timeout=20, allow_redirects=True)
+					if rh.status_code == 200:
+						ct = rh.headers.get("Content-Type", "").lower()
+						if "application/pdf" in ct or (rh.url or "").lower().endswith(".pdf"):
+							doc.pdf_url = rh.url
+							updated_pdf += 1
+						else:
+							doc.landing_url = rh.url or doc.landing_url
+						session.add(doc)
+				except Exception:
+					pass
+
+		session.commit()
+		# simple structured log to stdout
+		try:
+			print(json.dumps({"uwss_event": "resolve_publisher_done_detail", "updated_landing": updated, "updated_pdf": updated_pdf}))
+		except Exception:
+			pass
+		return max(updated, updated_pdf)
 	finally:
 		session.close()
 

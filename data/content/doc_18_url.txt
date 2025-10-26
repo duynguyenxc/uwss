@@ -1,4 +1,4 @@
-American Concrete Institute > Publications > Get Article
+Long-Term Performance of Corrosion-Damaged Reinforced Concrete Beams
 Select Regional Portal ​ ▼ ACI Global Home Middle East Region Portal Western Europe Region Portal
 ACI Global Home Middle East Region Portal Western Europe Region Portal
 Subscribe to Email ​ ▼ Please select a country... Afghanistan Åland Islands Albania Algeria American Samoa Andorra Angola Anguilla Antarctica Antigua And Barbuda Argentina Armenia Aruba Australia Austria Azerbaijan Bahamas Bahrain Bangladesh Barbados Belarus Belgium Belize Benin Bermuda Bhutan Bolivia Bonaire, Sint Eustatius and Saba Bosnia and Herzegovina Botswana Bouvet Island Brazil British Antarctic Territory British Indian Ocean Territory British Overseas Territory Brunei Darussalam Bulgaria Burkina Faso Burundi Cabo Verde Cambodia Cameroon Canada Cayman Islands Central African Republic Chad Chile China Christmas Island Cocos (Keeling) Islands Colombia Comoros Congo Congo, Democratic Republic of the Cook Islands Costa Rica Côte d'Ivoire Croatia Cuba Curaçao Cyprus Czech Republic Denmark Djibouti Dominica Dominican Republic Ecuador Egypt El Salvador Equatorial Guinea Eritrea Estonia Ethiopia Falkland Islands Faroe Islands Fiji Finland France French Guiana French Polynesia French Southern Territories Gabon Gambia Georgia Germany Ghana Gibraltar Greece Greenland Grenada Guadeloupe Guam Guatemala Guernsey Guinea Guinea-Bissau Guyana Haiti Heard Island and McDonald Islands Holy See (Vatican City) Honduras Hong Kong Hungary Iceland India Indonesia Iran, Islamic Republic of Iraq Ireland Isle of Man Israel Italy Jamaica Japan Jersey Jordan Kazakhstan Kenya Kiribati Korea (the Republic of) Korea, Democratic People's Republic of Kosovo, Republic of Kuwait Kyrgyzstan Lao People's Democratic Republic Latvia Lebanon Lesotho Liberia Libya Liechtenstein Lithuania Luxembourg Macau Macedonia, Former Yugoslav Republic of Madagascar Malawi Malaysia Maldives Mali Malta Marshall Islands Martinique Mauritania Mauritius Mayotte Mexico Micronesia, Federated States of Moldova, Republic of Monaco Mongolia Montenegro Montserrat Morocco Mozambique Myanmar Namibia Nauru Nepal Netherlands New Caledonia New Zealand Nicaragua Niger Nigeria Niue Norfolk Island Northern Mariana Islands Norway Oman Pakistan Palau Palestine, State of Panama Papua New Guinea Paraguay Peru Philippines Pitcairn Poland Portugal Puerto Rico Qatar Réunion Romania Russian Federation Rwanda Saint Barthélemy Saint Kitts And Nevis Saint Lucia Saint Martin (French part) Saint Pierre and Miquelon Samoa San Marino Sao Tome And Principe Saudi Arabia Senegal Serbia Seychelles Sierra Leone Singapore Sint Maarten (Dutch part) Slovakia Slovenia Solomon Islands Somalia South Africa South Georgia South Sudan Spain Sri Lanka St Vincent And Grenadines St. Helena Ascensian and Tristan da Aunh Sudan Suriname Svalbard and Jan Mayen Swaziland Sweden Switzerland Syrian Arab Republic Taiwan Tajikistan Tanzania, United Republic of Thailand Timor-Leste Togo Tokelau Tonga Trinidad And Tobago Tunisia Turkey Turkmenistan Turks And Caicos Islands Tuvalu Uganda Ukraine United Arab Emirates United Kingdom United States United States Minor Outlying Islands Uruguay Uzbekistan Vanuatu Venezuela Viet Nam Virgin Islands (British) Virgin Islands (U.S.) Wallis And Futuna Islands Western Sahara Yemen Zambia Zimbabwe
@@ -124,7 +124,22 @@ ACI Bylaws
 Board of Direction
 Job Openings at ACI
 Contact Us
-Home > Publications > Get Article
+Home > Publications > International Concrete Abstracts Portal
+International Concrete Abstracts Portal
+The International Concrete Abstracts Portal is an ACI led collaboration with leading technical organizations from within the international concrete industry and offers the most comprehensive collection of published concrete abstracts.
+Title: Long-Term Performance of Corrosion-Damaged Reinforced Concrete Beams
+Author(s): Tamer El Maaddawy, Khaled Soudki, and Timothy Topper
+Publication: Structural Journal
+Volume: 102
+Issue: 5
+Appears on pages(s): 649-656
+Keywords: concrete; corrosion; cracking; flexure; steel
+DOI: 10.14359/14660
+Date: 9/1/2005
+Abstract: This paper presents the results of an experimental study designed to investigate the combined effect of corrosion and sustained loads on the structural performance of reinforced concrete beams. A total of nine beams, each measuring 152 x 254 x 3200 mm, were tested. One beam was tested as a virgin while eight beams were exposed to accelerated corrosion for up to 310 days using an impressed current technique. Four beams were corroded under a sustained load that corresponded to approximately 60% of the yield load of the virgin beam. The four remaining beams were kept unloaded during the corrosion exposure. Test results showed that the presence of a sustained load and associated flexural cracks during corrosion exposure significantly reduced the time to corrosion cracking and slightly increased the corrosion crack width. The presence of flexural cracks during corrosion exposure initially increased the steel mass loss rate and, consequently, the reduction in the beam strength. As time progressed, no correlation between the reduction in the beam strength and the presence of flexural cracks was observed.
+ALSO AVAILABLE IN:
+Electronic Structural Journal
+Edit Module Settings to define Page Content Reviewer
 About ACI
 ●
 Career Center

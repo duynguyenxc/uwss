@@ -1,4 +1,4 @@
-American Concrete Institute > Publications > Get Article
+Ordinary and Long-Term Durability of Reinforced Concrete Structures
 Select Regional Portal ​ ▼ ACI Global Home Middle East Region Portal Western Europe Region Portal
 ACI Global Home Middle East Region Portal Western Europe Region Portal
 Subscribe to Email ​ ▼ Please select a country... Afghanistan Åland Islands Albania Algeria American Samoa Andorra Angola Anguilla Antarctica Antigua And Barbuda Argentina Armenia Aruba Australia Austria Azerbaijan Bahamas Bahrain Bangladesh Barbados Belarus Belgium Belize Benin Bermuda Bhutan Bolivia Bonaire, Sint Eustatius and Saba Bosnia and Herzegovina Botswana Bouvet Island Brazil British Antarctic Territory British Indian Ocean Territory British Overseas Territory Brunei Darussalam Bulgaria Burkina Faso Burundi Cabo Verde Cambodia Cameroon Canada Cayman Islands Central African Republic Chad Chile China Christmas Island Cocos (Keeling) Islands Colombia Comoros Congo Congo, Democratic Republic of the Cook Islands Costa Rica Côte d'Ivoire Croatia Cuba Curaçao Cyprus Czech Republic Denmark Djibouti Dominica Dominican Republic Ecuador Egypt El Salvador Equatorial Guinea Eritrea Estonia Ethiopia Falkland Islands Faroe Islands Fiji Finland France French Guiana French Polynesia French Southern Territories Gabon Gambia Georgia Germany Ghana Gibraltar Greece Greenland Grenada Guadeloupe Guam Guatemala Guernsey Guinea Guinea-Bissau Guyana Haiti Heard Island and McDonald Islands Holy See (Vatican City) Honduras Hong Kong Hungary Iceland India Indonesia Iran, Islamic Republic of Iraq Ireland Isle of Man Israel Italy Jamaica Japan Jersey Jordan Kazakhstan Kenya Kiribati Korea (the Republic of) Korea, Democratic People's Republic of Kosovo, Republic of Kuwait Kyrgyzstan Lao People's Democratic Republic Latvia Lebanon Lesotho Liberia Libya Liechtenstein Lithuania Luxembourg Macau Macedonia, Former Yugoslav Republic of Madagascar Malawi Malaysia Maldives Mali Malta Marshall Islands Martinique Mauritania Mauritius Mayotte Mexico Micronesia, Federated States of Moldova, Republic of Monaco Mongolia Montenegro Montserrat Morocco Mozambique Myanmar Namibia Nauru Nepal Netherlands New Caledonia New Zealand Nicaragua Niger Nigeria Niue Norfolk Island Northern Mariana Islands Norway Oman Pakistan Palau Palestine, State of Panama Papua New Guinea Paraguay Peru Philippines Pitcairn Poland Portugal Puerto Rico Qatar Réunion Romania Russian Federation Rwanda Saint Barthélemy Saint Kitts And Nevis Saint Lucia Saint Martin (French part) Saint Pierre and Miquelon Samoa San Marino Sao Tome And Principe Saudi Arabia Senegal Serbia Seychelles Sierra Leone Singapore Sint Maarten (Dutch part) Slovakia Slovenia Solomon Islands Somalia South Africa South Georgia South Sudan Spain Sri Lanka St Vincent And Grenadines St. Helena Ascensian and Tristan da Aunh Sudan Suriname Svalbard and Jan Mayen Swaziland Sweden Switzerland Syrian Arab Republic Taiwan Tajikistan Tanzania, United Republic of Thailand Timor-Leste Togo Tokelau Tonga Trinidad And Tobago Tunisia Turkey Turkmenistan Turks And Caicos Islands Tuvalu Uganda Ukraine United Arab Emirates United Kingdom United States United States Minor Outlying Islands Uruguay Uzbekistan Vanuatu Venezuela Viet Nam Virgin Islands (British) Virgin Islands (U.S.) Wallis And Futuna Islands Western Sahara Yemen Zambia Zimbabwe
@@ -124,7 +124,22 @@ ACI Bylaws
 Board of Direction
 Job Openings at ACI
 Contact Us
-Home > Publications > Get Article
+Home > Publications > International Concrete Abstracts Portal
+International Concrete Abstracts Portal
+The International Concrete Abstracts Portal is an ACI led collaboration with leading technical organizations from within the international concrete industry and offers the most comprehensive collection of published concrete abstracts.
+Title: Ordinary and Long-Term Durability of Reinforced Concrete Structures
+Author(s): M. Collepardi
+Publication: Symposium Paper
+Volume: 192
+Issue:
+Appears on pages(s): 1-18
+Keywords: cathodic protection; corrosion; durability; epoxy resins; reinforcement; steels
+DOI: 10.14359/5738
+Date: 4/1/2000
+Abstract: Durability of reinforced concrete structures (RCS) seems to be poor when compared with those of ancient un-reinforced structures. When ordinary durability (service life of 40-50 years) is needed, the poor behavior of RCS stems from human negligence in adopting the well consolidated and available experiential knowledge. However, for long-term durability requirements (service life of 100 years and more) the inherent vulnerability of the steel-concrete system must be taken into account.  The inherent vulnerability of RCS substantially depend on the following "weak points" of concrete: (I) Low tensile strength (ii) High modulus of elasticity (iii) Microcracking caused by restrained thermal and drying shrinkage or service loading.  This paper critically examines some possible future scenarios to achieve long-term-durability in RCS, including: a) Improvement in the corrosion behavior of the metallic reinforcement through the use of corrosion inhibitors, protection of the reinforcement with a coating, chance in the composition of reinforcing bars, or cathodic protection. b) Use of non metallic reinforcement.  c) Increase in the tensile strength and/or ductility of concrete mixtures based on rubber-like polymer additions. d) Surface coatings for concrete protection.
+ALSO AVAILABLE IN:
+New and Archived Symposium Volumes - Digital Subscription
+Edit Module Settings to define Page Content Reviewer
 About ACI
 ●
 Career Center

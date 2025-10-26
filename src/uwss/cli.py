@@ -143,6 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_crossref.add_argument("--max", type=int, default=100)
 	p_crossref.add_argument("--cache-ttl-sec", type=int, default=None)
 	p_crossref.add_argument("--resume", action="store_true", help="Resume from saved offset")
+	p_crossref.add_argument("--log-json", action="store_true")
 
 	def _cmd_crossref(args: argparse.Namespace) -> int:
 		from .discovery import iter_crossref_results
@@ -168,6 +169,7 @@ def build_parser() -> argparse.ArgumentParser:
 					start_offset = int(st.checkpoint_value)
 				except Exception:
 					start_offset = 0
+		start_ts = time.time()
 		inserted = 0
 		try:
 			for item in iter_crossref_results(keywords, year_filter, max_records=args.max, contact_email=contact_email, cache_ttl_sec=args.cache_ttl_sec, start_offset=start_offset):
@@ -231,6 +233,7 @@ def build_parser() -> argparse.ArgumentParser:
 				session.merge(st)
 				session.commit()
 			console.print(f"[green]Inserted {inserted} Crossref records into {args.db}[/green]")
+			_log_json(args.log_json, "discover_crossref_done", inserted=inserted, elapsed_sec=round(time.time()-start_ts,3))
 			return 0
 		except Exception as e:
 			session.rollback()
@@ -248,6 +251,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_arxiv.add_argument("--db", default=str(Path("data") / "uwss.sqlite"))
 	p_arxiv.add_argument("--max", type=int, default=50)
 	p_arxiv.add_argument("--resume", action="store_true")
+	p_arxiv.add_argument("--log-json", action="store_true")
 
 	def _cmd_arxiv(args: argparse.Namespace) -> int:
 		from .discovery import iter_arxiv_results
@@ -270,6 +274,7 @@ def build_parser() -> argparse.ArgumentParser:
 					start = int(st.checkpoint_value)
 				except Exception:
 					start = 0
+		start_ts = time.time()
 		inserted = 0
 		try:
 			for item in iter_arxiv_results(keywords, max_records=args.max, start=start):
@@ -313,6 +318,7 @@ def build_parser() -> argparse.ArgumentParser:
 				session.merge(st)
 				session.commit()
 			console.print(f"[green]Inserted {inserted} arXiv records into {args.db}[/green]")
+			_log_json(args.log_json, "discover_arxiv_done", inserted=inserted, elapsed_sec=round(time.time()-start_ts,3))
 			return 0
 		except Exception as e:
 			session.rollback()
@@ -331,6 +337,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_eupmc.add_argument("--max", type=int, default=100)
 	p_eupmc.add_argument("--cache-ttl-sec", type=int, default=None)
 	p_eupmc.add_argument("--resume", action="store_true")
+	p_eupmc.add_argument("--log-json", action="store_true")
 
 	def _cmd_eupmc(args: argparse.Namespace) -> int:
 		from .discovery import iter_eupmc_results
@@ -351,6 +358,7 @@ def build_parser() -> argparse.ArgumentParser:
 			st = session.query(IngestionState).filter(IngestionState.source == "europe_pmc", IngestionState.checkpoint_key == "cursor").first()
 			if st and st.checkpoint_value:
 				start_cursor = st.checkpoint_value
+		start_ts = time.time()
 		inserted = 0
 		try:
 			for item in iter_eupmc_results(keywords, year_filter, max_records=args.max, cache_ttl_sec=args.cache_ttl_sec, start_cursor=start_cursor):
@@ -412,6 +420,7 @@ def build_parser() -> argparse.ArgumentParser:
 				session.merge(st)
 				session.commit()
 			console.print(f"[green]Inserted {inserted} Europe PMC records into {args.db}[/green]")
+			_log_json(args.log_json, "discover_eupmc_done", inserted=inserted, elapsed_sec=round(time.time()-start_ts,3))
 			return 0
 		finally:
 			session.close()
@@ -425,6 +434,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_pmc.add_argument("--max", type=int, default=50)
 	p_pmc.add_argument("--cache-ttl-sec", type=int, default=None)
 	p_pmc.add_argument("--resume", action="store_true")
+	p_pmc.add_argument("--log-json", action="store_true")
 
 	def _cmd_pmc(args: argparse.Namespace) -> int:
 		from .discovery import iter_pmc_results
@@ -444,6 +454,7 @@ def build_parser() -> argparse.ArgumentParser:
 					retstart = int(st.checkpoint_value)
 				except Exception:
 					retstart = 0
+		start_ts = time.time()
 		inserted = 0
 		try:
 			for item in iter_pmc_results(keywords, max_records=args.max, cache_ttl_sec=args.cache_ttl_sec, start_retstart=retstart):
@@ -509,6 +520,7 @@ def build_parser() -> argparse.ArgumentParser:
 				session.merge(st)
 				session.commit()
 			console.print(f"[green]Inserted {inserted} PMC records into {args.db}[/green]")
+			_log_json(args.log_json, "discover_pmc_done", inserted=inserted, elapsed_sec=round(time.time()-start_ts,3))
 			return 0
 		finally:
 			session.close()
@@ -522,6 +534,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_doaj.add_argument("--max", type=int, default=50)
 	p_doaj.add_argument("--cache-ttl-sec", type=int, default=None)
 	p_doaj.add_argument("--resume", action="store_true")
+	p_doaj.add_argument("--log-json", action="store_true")
 
 	def _cmd_doaj(args: argparse.Namespace) -> int:
 		from .discovery import iter_doaj_results
@@ -541,6 +554,7 @@ def build_parser() -> argparse.ArgumentParser:
 					page = int(st.checkpoint_value)
 				except Exception:
 					page = 1
+		start_ts = time.time()
 		inserted = 0
 		try:
 			for item in iter_doaj_results(keywords, max_records=args.max, cache_ttl_sec=args.cache_ttl_sec, start_page=page):
@@ -592,6 +606,7 @@ def build_parser() -> argparse.ArgumentParser:
 				session.merge(st)
 				session.commit()
 			console.print(f"[green]Inserted {inserted} DOAJ records into {args.db}[/green]")
+			_log_json(args.log_json, "discover_doaj_done", inserted=inserted, elapsed_sec=round(time.time()-start_ts,3))
 			return 0
 		finally:
 			session.close()
@@ -607,6 +622,7 @@ def build_parser() -> argparse.ArgumentParser:
 	p_s2.add_argument("--api-key", default=None, help="Semantic Scholar API key (optional)")
 	p_s2.add_argument("--cache-ttl-sec", type=int, default=None)
 	p_s2.add_argument("--resume", action="store_true")
+	p_s2.add_argument("--log-json", action="store_true")
 
 	def _cmd_s2(args: argparse.Namespace) -> int:
 		from .discovery import iter_semanticscholar_results
@@ -629,6 +645,7 @@ def build_parser() -> argparse.ArgumentParser:
 					start_offset = int(st.checkpoint_value)
 				except Exception:
 					start_offset = 0
+		start_ts = time.time()
 		inserted = 0
 		try:
 			for item in iter_semanticscholar_results(keywords, max_records=args.max, api_key=args.api_key, cache_ttl_sec=args.cache_ttl_sec, start_offset=start_offset):
@@ -677,6 +694,7 @@ def build_parser() -> argparse.ArgumentParser:
 				session.merge(st)
 				session.commit()
 			console.print(f"[green]Inserted {inserted} Semantic Scholar records into {args.db}[/green]")
+			_log_json(args.log_json, "discover_s2_done", inserted=inserted, elapsed_sec=round(time.time()-start_ts,3))
 			return 0
 		finally:
 			session.close()
@@ -799,6 +817,10 @@ def build_parser() -> argparse.ArgumentParser:
 	p_export.add_argument("--include-provenance", action="store_true")
 	# embed content text (use with caution for large outputs)
 	p_export.add_argument("--embed-content", action="store_true")
+	# require at least one matched keyword/phrase (from score-keywords)
+	p_export.add_argument("--require-match", action="store_true")
+	# logging
+	p_export.add_argument("--log-json", action="store_true")
 	# include-full-text excerpt
 	p_export.add_argument("--include-full-text", action="store_true")
 
@@ -818,6 +840,10 @@ def build_parser() -> argparse.ArgumentParser:
 					continue
 				if args.skip_missing_core and (not d.title and not d.doi):
 					continue
+				if args.require_match:
+					kf = (d.keywords_found or "").strip()
+					if not kf or kf == "[]":
+						continue
 				row = {
 					"id": d.id,
 					"source_url": d.source_url,
@@ -905,6 +931,7 @@ def build_parser() -> argparse.ArgumentParser:
 				else:
 					raise ValueError("Unsupported extension. Use .jsonl or .csv")
 			console.print(f"[green]Exported {len(rows)} records to {args.out}[/green]")
+			_log_json(args.log_json, "export_done", out=str(args.out), count=len(rows))
 			return 0
 		finally:
 			session.close()
@@ -951,6 +978,13 @@ def build_parser() -> argparse.ArgumentParser:
 			os.environ["UWSS_THROTTLE_SEC"] = str(args.throttle_sec)
 		if args.jitter_sec is not None:
 			os.environ["UWSS_JITTER_SEC"] = str(args.jitter_sec)
+		# resolve publisher links first to improve pdf_url hit rate
+		try:
+			from .crawl import resolve_publisher_links
+			resolved = resolve_publisher_links(Path(args.db), limit=200, contact_email=contact_email)
+			_log_json(args.log_json, "resolve_publisher_done", resolved=resolved)
+		except Exception:
+			pass
 		enriched = enrich_open_access_with_unpaywall(Path(args.db), contact_email=contact_email, limit=200)
 		console.print(f"[blue]Enriched OA via Unpaywall: {enriched}[/blue]")
 		n = download_open_links(Path(args.db), Path(args.outdir), limit=args.limit, contact_email=contact_email)
