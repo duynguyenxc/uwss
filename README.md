@@ -219,7 +219,7 @@ python -m src.uwss.cli fetch --limit 20
 python -m src.uwss.cli fetch --throttle-sec 1.0 --jitter-sec 0.5
 ```
 
-## 🐳 **DOCKER (Optional)**
+## 🐳 **DOCKER**
 
 ```bash
 # Build image
